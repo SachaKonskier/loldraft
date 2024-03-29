@@ -24,16 +24,19 @@ export default function HomePage() {
         </div>
         <div className="px-8 py-5">
           {/* input field */}
-          <div className="relative gap-2  h-12 flex items-center  rounded-lg ">
+          <div className="relative gap-2  h-16 flex w-full  rounded-lg ring-light-green ring-1 p-3 saturate-150">
             <input
               type="text"
-              className="w-[320px] h-10  px-3 py-2 text-gray-400 rounded-lg ring-light-green ring-1 focus:outline-none focus:ring-2 focus:ring-light-green"
+              className="w-[320px] h-full  px-3 py-2 text-gray-400 rounded-lg focus:outline-none caret-light-green"
               placeholder="Game Name + #EX"
               value={playerInput}
               onChange={(e) => setPlayerInput(e.target.value)}
             />
-            <span className="absolute top-2.5 inset-y-0 right-0 pr-4">
-              <button>
+            <span className="absolute top-[18px] inset-y-0 right-0 pr-4 ">
+              <button
+                className="hover:animate-pulse hover:scale-110"
+                disabled={playerInput.length === 0}
+              >
                 <SearchIcon
                   className="text-white rotate-90"
                   onClick={() => handleAddPlayerCard()}
