@@ -10,9 +10,15 @@ export default function PlayerCardComponent({ data }: { data: string }) {
   const handleSubAccountOnClick = () => {
     setSubAccounts([...subAccounts, playerInput]);
   };
+  function handleKeyPressed(event: any) {
+    if (event.key === 'Enter') {
+      handleSubAccountOnClick();
+    }
+  }
   const deleteAccountOnClick = (account: string) => {
     setSubAccounts(subAccounts.filter((item) => item !== account));
   };
+  
   return (
     <div className="w-[320px] max-h-[220px] h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-br via-white/40 from-light-green overflow-x-auto">
       <div className="text-white pb-2 justify-center flex">
@@ -29,6 +35,7 @@ export default function PlayerCardComponent({ data }: { data: string }) {
             <button
               className="ml-auto"
               onClick={() => deleteAccountOnClick(account)}
+              
             >
               <CloseIcon className="text-red-600" />
             </button>
@@ -42,6 +49,7 @@ export default function PlayerCardComponent({ data }: { data: string }) {
           placeholder="Game Name + #EX"
           value={playerInput}
           onChange={(e) => setPlayerInput(e.target.value)}
+          onKeyUp={(event) => handleKeyPressed(event)}
         />
         <span className="absolute top-2.5 inset-y-0 right-0 pr-4">
           <button>
