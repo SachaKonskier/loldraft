@@ -1,12 +1,13 @@
 import PlayerCardComponent from "@/components/playerCard";
-import { useGetSummonerPuuid } from "@/modules/riot/riot.api";
+
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
-
+import {RiotApi} from "@/modules/riot/riot.api";
+import { get } from "http";
+const riotApi = RiotApi;
 export default  function HomePage() {
-const {data: summoner} = useGetSummonerPuuid("garen la bagarre", "garen");
-console.log("summoner", summoner)
+
   const [playerInput, setPlayerInput] = useState("");
   const [players, setPlayers] = useState<string[]>([]);
   //  store the input value in the state players
@@ -19,8 +20,13 @@ console.log("summoner", summoner)
       handleAddPlayerCard();
     }
   }
- 
-  
+  async function getSummoner() {
+    
+  const res= await riotApi.getSummonerPuuid("garen la bagarre", "garen");
+  console.log('res', res);
+
+}
+const ok = getSummoner();
   return (
     <div className="flex h-screen w-full">
       <div className="w-1/4 min-w-[370px] bg-blue-gray h-full pt-10">
