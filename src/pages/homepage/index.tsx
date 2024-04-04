@@ -14,6 +14,7 @@ export default  function HomePage() {
   const handleAddPlayerCard = () => {
     console.log("add player card");
     setPlayers([...players, playerInput]);
+    getSummoner();
   };
   function handleKeyPressed(event: any) {
     if (event.key === "Enter") {
@@ -21,12 +22,14 @@ export default  function HomePage() {
     }
   }
   async function getSummoner() {
-    
-  const res= await riotApi.getSummonerPuuid("garen la bagarre", "garen");
+  const summonerName = playerInput.split("#")[0];
+  const summonerTag = playerInput.split("#")[1];
+  const res= await riotApi.getSummonerPuuid(summonerName, summonerTag);
   console.log('res', res);
 
 }
-const ok = getSummoner();
+
+
   return (
     <div className="flex h-screen w-full">
       <div className="w-1/4 min-w-[370px] bg-blue-gray h-full pt-10">
