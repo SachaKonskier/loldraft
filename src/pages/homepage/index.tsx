@@ -3,18 +3,28 @@ import PlayerCardComponent from "@/components/playerCard";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
-import {RiotApi} from "@/modules/riot/riot.api";
-import { get } from "http";
-const riotApi = RiotApi;
-export default  function HomePage() {
+import { RiotApi } from "@/modules/riot/riot.api";
+interface puuid {
+  puuid: string;
 
+}
+const riotApi = RiotApi;
+export default function HomePage() {
   const [playerInput, setPlayerInput] = useState("");
   const [players, setPlayers] = useState<string[]>([]);
   //  store the input value in the state players
-  const handleAddPlayerCard = () => {
-    console.log("add player card");
-    setPlayers([...players, playerInput]);
-    getSummoner();
+  const handleAddPlayerCard = async () => {
+    const summonerPuuid = await getSummoner() as puuid;
+
+    if (summonerPuuid?.puuid) {
+      setPlayers([...players, playerInput]);
+      const matches = await riotApi.getRawMatchList(summonerPuuid?.puuid) as any;
+      console.log(matches)
+      const filteredMatches = await riotApi.getFilteredMatchList(summonerPuuid?.puuid, matches) 
+      console.log(filteredMatches)
+    } else {
+      return;
+    }
   };
   function handleKeyPressed(event: any) {
     if (event.key === "Enter") {
@@ -22,13 +32,11 @@ export default  function HomePage() {
     }
   }
   async function getSummoner() {
-  const summonerName = playerInput.split("#")[0];
-  const summonerTag = playerInput.split("#")[1];
-  const res= await riotApi.getSummonerPuuid(summonerName, summonerTag);
-  console.log('res', res);
-
-}
-
+    const summonerName = playerInput.split("#")[0];
+    const summonerTag = playerInput.split("#")[1];
+    const res = await riotApi.getSummonerPuuid(summonerName, summonerTag);
+    return res;
+  }
 
   return (
     <div className="flex h-screen w-full">
@@ -44,7 +52,6 @@ export default  function HomePage() {
         <div className="px-8 py-5 bg ">
           {/* input field */}
           <div className="relative gap-2  h-16 flex w-[320px]  rounded-lg ring-light-green ring-1 p-3">
-            
             <input
               type="text"
               className="w-full h-full  px-3 py-2 text-gray-400 rounded-lg focus:outline-none caret-light-green"
@@ -64,7 +71,6 @@ export default  function HomePage() {
                 <SearchIcon className="text-white rotate-90" />
               </button>
             </span>
-           
           </div>
         </div>
         {players.map((player) => (
