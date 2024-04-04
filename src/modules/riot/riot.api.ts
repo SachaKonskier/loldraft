@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { RiotService } from "./riot.service";
 const riotUrl =
   "https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id";
-const apiKey = "RGAPI-0d30a671-d332-4f38-aa73-933e76ff6f10";
+const apiKey = process.env.RIOT_API_KEY;
 export const RiotApi: RiotService = {
   getSummonerPuuid: async (summonerName, summonerTag) => {
     try {
@@ -13,11 +13,12 @@ export const RiotApi: RiotService = {
           headers: {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range",
           },
           }
       );
-          console.log('response', response)
-      const data = await response
+      const data = await response.json()
       console.log(data);
       
     } catch (error) {
