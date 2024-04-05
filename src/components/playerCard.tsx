@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import svgTop from '../../public/top.svg';
 import Image from 'next/image';
 import { useState } from 'react';
-export default function PlayerCardComponent({ data }: { data: string }) {
+export default function PlayerCardComponent({ player }: { player: string }) {
   const [playerInput, setPlayerInput] = useState('');
   const [subAccounts, setSubAccounts] = useState<string[]>([]);
   const handleSubAccountOnClick = () => {
@@ -23,7 +23,7 @@ export default function PlayerCardComponent({ data }: { data: string }) {
     <div className="w-[320px] max-h-[220px] h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-br via-white/40 from-light-green overflow-x-auto">
       <div className="text-white pb-2 justify-center flex">
         <Image src={svgTop} alt="My SVG" width={24} height={24} />
-        <span className="pl-4 font-semibold">{data}</span>
+        <span className="pl-4 font-semibold">{player}</span>
         <span className="ml-auto">
           <VisibilityOutlinedIcon />
         </span>

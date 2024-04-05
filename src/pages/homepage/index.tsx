@@ -6,22 +6,27 @@ import { useState } from "react";
 import { RiotApi } from "@/modules/riot/riot.api";
 interface puuid {
   puuid: string;
-
 }
 const riotApi = RiotApi;
 export default function HomePage() {
   const [playerInput, setPlayerInput] = useState("");
   const [players, setPlayers] = useState<string[]>([]);
+  const [data, setData] = useState<any>();
   //  store the input value in the state players
   const handleAddPlayerCard = async () => {
-    const summonerPuuid = await getSummoner() as puuid;
+    const summonerPuuid = (await getSummoner()) as puuid;
 
     if (summonerPuuid?.puuid) {
       setPlayers([...players, playerInput]);
-      const matches = await riotApi.getRawMatchList(summonerPuuid?.puuid) as any;
-      console.log(matches)
-      const filteredMatches = await riotApi.getFilteredMatchList(summonerPuuid?.puuid, matches) 
-      console.log(filteredMatches)
+      const matches = (await riotApi.getRawMatchList(
+        summonerPuuid?.puuid
+      )) as any;
+      const filteredMatches = await riotApi.getFilteredMatchList(
+        summonerPuuid?.puuid,
+        matches
+      );
+      setData(filteredMatches);
+      console.log(filteredMatches);
     } else {
       return;
     }
@@ -75,10 +80,11 @@ export default function HomePage() {
         </div>
         {players.map((player) => (
           <div key={player} className="px-8 py-5">
-            <PlayerCardComponent data={player} />
+            <PlayerCardComponent player={player} />
           </div>
         ))}
       </div>
+      <div></div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { IChampionOutput } from "@/types/champions/champions";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const riotUrl = "https://europe.api.riotgames.com/lol/match/v5/matches";
@@ -10,7 +11,7 @@ export default async function handler(
   const {
     query: { puuid, matches, summonerPuuid },
   } = req;
-  const id = puuid
+  const id = puuid;
   if (req.method === "GET") {
     if (puuid) {
       // Handle request for fetching matches by PUUID
@@ -29,7 +30,7 @@ export default async function handler(
 async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   try {
     const result = await fetch(
-      `${riotUrl}/by-puuid/${puuid}/ids?start=0&count=1&api_key=${apiKey}`
+      `${riotUrl}/by-puuid/${puuid}/ids?start=0&count=30&api_key=${apiKey}`
     ).then((response) => response.json());
 
     res.status(200).json(result);
@@ -39,37 +40,71 @@ async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   }
 }
 
-async function handleMatchesByIds(matches: string, puuid: string, res: NextApiResponse) {
-   
-    const stringToMatchesArray = matches.split(',');
+async function handleMatchesByIds(
+  matches: string,
+  puuid: string,
+  res: NextApiResponse
+) {
+  const stringToMatchesArray = matches.split(",");
 
   try {
-    const results: string[] = [];
+    const results: IChampionOutput[] = [];
     for (let match of stringToMatchesArray) {
-   const res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then((response) => response.json());
-        const filteredDataByPuuid = res.info.participants.filter((participant: any) => participant.puuid === puuid).map((element) => ({
-            championName: element.championName,
-            championId: element.championId,
-            death: element.deaths,
-            goldEarned: element.goldEarned,
-            position: element.individualPosition,
-            kills: element.kills,
-            lane: element.lane,
-            summonerName: element.riotIdGameName,
-            assists: element.assists,
-            minionsKilled: element.totalMinionsKilled,
-            win: element.win,
-            timePlayed: element.timePlayed,
-            partyType: res.info.gameMode
+      const res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
+        (response) => response.json()
+      );
+      const filteredDataByPuuid = res.info.participants
+
+        .filter((participant: any) => participant.puuid === puuid)
+        .map((element: any) =>  ({
+          championName: element.championName,
+          championId: element.championId,
+          death: element.deaths,
+          position: element.teamPosition,
+          kills: element.kills,
+          summonerName: element.riotIdGameName,
+          assists: element.assists,
+          minionsKilled: element.totalMinionsKilled,
+          neutralMinionsKilled: element.neutralMinionsKilled,
+          win: element.win,
+          timePlayed: element.timePlayed,
+          partyType: res.info.gameMode,
+          kda: parseFloat(((element.kills + element.assists) / element.deaths).toFixed(2)),
+          killParticipation: getKillParticipation(res.info.participants, puuid),
+          csPerMinute: parseFloat((element.totalMinionsKilled / (element.timePlayed / 60)).toFixed(2)),
+          gameType: res.info.gameType
         }))
-        console.log("filteredDataByPuuid", filteredDataByPuuid)
-        results.push(...filteredDataByPuuid);
-        }
-    console.log("results", results);
-    res.send(results);
-    
+        .filter((element: any) => element.partyType !== "ARAM");
+      results.push(...filteredDataByPuuid);
+    }
+    res.send(results  );
   } catch (error) {
     console.error("Error fetching matches:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
+}
+
+function getKillParticipation(participants: any[], puuid: string) {
+  const player = participants.find((participant) => participant.puuid === puuid);
+  const team = participants.filter((participant) => participant.teamId === player.teamId);
+  const teamKills = team.reduce((acc, participant) => acc + participant.kills, 0);
+  return parseFloat(((player.kills + player.assists) / teamKills).toFixed(2)) * 100 + '%' ;
+}
+
+function mergeData(data: IChampionOutput[]) {
+  return data.reduce((acc: { [key: string]: any }, curr) => {
+    const { championId, championName, summonerName, partyType, ...rest } = curr;
+    if (!acc[championId]) {
+      acc[championName] = {
+        championId,
+        championName,
+        summonerName,
+        partyType,
+        matches: [rest],
+      };
+    } else {
+      acc[championId].matches.push(rest);
+    }
+    return acc;
+  }, {});
 }
