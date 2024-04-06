@@ -1,6 +1,5 @@
 import { IChampionOutput } from "@/types/champions/champions";
 import { NextApiRequest, NextApiResponse } from "next";
-
 const riotUrl = "https://europe.api.riotgames.com/lol/match/v5/matches";
 const apiKey = process.env.RIOT_API_KEY;
 
@@ -30,7 +29,7 @@ export default async function handler(
 async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   try {
     const result = await fetch(
-      `${riotUrl}/by-puuid/${puuid}/ids?start=0&count=30&api_key=${apiKey}`
+      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=10&api_key=${apiKey}`
     ).then((response) => response.json());
 
     res.status(200).json(result);
@@ -54,7 +53,6 @@ async function handleMatchesByIds(
         (response) => response.json()
       );
       const filteredDataByPuuid = res.info.participants
-
         .filter((participant: any) => participant.puuid === puuid)
         .map((element: any) =>  ({
           championName: element.championName,
@@ -64,20 +62,20 @@ async function handleMatchesByIds(
           kills: element.kills,
           summonerName: element.riotIdGameName,
           assists: element.assists,
-          minionsKilled: element.totalMinionsKilled,
-          neutralMinionsKilled: element.neutralMinionsKilled,
+          minionsKilled: element.totalMinionsKilled + element.neutralMinionsKilled,
           win: element.win,
           timePlayed: element.timePlayed,
           partyType: res.info.gameMode,
           kda: parseFloat(((element.kills + element.assists) / element.deaths).toFixed(2)),
           killParticipation: getKillParticipation(res.info.participants, puuid),
-          csPerMinute: parseFloat((element.totalMinionsKilled / (element.timePlayed / 60)).toFixed(2)),
+          csPerMinute: parseFloat((element.totalMinionsKilled  / (element.timePlayed / 60)).toFixed(2)),
           gameType: res.info.gameType
         }))
-        .filter((element: any) => element.partyType !== "ARAM");
+        .filter((element: any) => element.partyType !== "ARAM" && element.partyType !== 'URF');
       results.push(...filteredDataByPuuid);
     }
-    res.send(results  );
+ 
+    res.send(mergeData(results));
   } catch (error) {
     console.error("Error fetching matches:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -88,23 +86,56 @@ function getKillParticipation(participants: any[], puuid: string) {
   const player = participants.find((participant) => participant.puuid === puuid);
   const team = participants.filter((participant) => participant.teamId === player.teamId);
   const teamKills = team.reduce((acc, participant) => acc + participant.kills, 0);
-  return parseFloat(((player.kills + player.assists) / teamKills).toFixed(2)) * 100 + '%' ;
+  return parseFloat(((player.kills + player.assists) / teamKills * 100).toFixed(2));
 }
 
 function mergeData(data: IChampionOutput[]) {
-  return data.reduce((acc: { [key: string]: any }, curr) => {
-    const { championId, championName, summonerName, partyType, ...rest } = curr;
-    if (!acc[championId]) {
-      acc[championName] = {
-        championId,
-        championName,
-        summonerName,
-        partyType,
-        matches: [rest],
-      };
-    } else {
-      acc[championId].matches.push(rest);
-    }
-    return acc;
+  const result = data.reduce((acc: any, curr: any) => {
+      const champion = acc[curr.championName];
+      if (champion) {
+        champion.name = curr.championName;
+          champion.kills += curr.kills;
+          champion.deaths += curr.death;
+          champion.assists += curr.assists;
+          champion.minionsKilled += curr.minionsKilled;
+          champion.timePlayed += curr.timePlayed;
+          champion.csPerMinute += curr.csPerMinute;
+          champion.kda += curr.kda;
+          champion.killParticipation += curr.killParticipation;
+          champion.totalGames++;
+          champion.wins += curr.win ? 1 : 0;
+          champion.losses += curr.win ? 0 : 1;
+          champion.positions.push(curr.position);
+      } else {
+          acc[curr.championName] = {
+            name : curr.championName,
+              kills: curr.kills,
+              deaths: curr.death,
+              assists: curr.assists,
+              minionsKilled: curr.minionsKilled,
+              timePlayed: curr.timePlayed,
+              csPerMinute: curr.csPerMinute,
+              kda: curr.kda,
+              killParticipation: curr.killParticipation,
+              totalGames: 1,
+              wins: curr.win ? 1 : 0,
+              losses: curr.win ? 0 : 1,
+              positions: [curr.position],
+          };
+      }
+      return acc;
   }, {});
+
+  for (const champion in result) {
+      const stats = result[champion];
+      stats.csPerMinute = (stats.csPerMinute / stats.totalGames).toFixed(2);
+      stats.kda = (stats.kda / stats.totalGames).toFixed(2);
+      stats.killParticipation = (stats.killParticipation / stats.totalGames).toFixed(2);
+      stats.winrate = ((stats.wins / stats.totalGames) * 100).toFixed(2);
+      stats.championImg = `/assets/champion/${stats.name}.png`;
+      stats.championBgImg = `assets/background/${stats.name}.jpg`
+    }
+  
+
+  return result;
 }

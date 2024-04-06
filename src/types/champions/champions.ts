@@ -7,10 +7,10 @@ export interface IRefinedChampionOutput {
     position: string;
     summonerName: string;
     minionsKilled: number;
-    neutralMinionsKilled: number;
     win: boolean;
     timePlayed: number;
     partyType: string;
+    gameType: string;
 }
 
 export interface IChampionOutput extends IRefinedChampionOutput {

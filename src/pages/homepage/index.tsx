@@ -4,6 +4,9 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
 import { RiotApi } from "@/modules/riot/riot.api";
+
+import Image from 'next/image';
+import { IChampionOutput } from "@/types/champions/champions";
 interface puuid {
   puuid: string;
 }
@@ -26,7 +29,7 @@ export default function HomePage() {
         matches
       );
       setData(filteredMatches);
-      console.log(filteredMatches);
+    
     } else {
       return;
     }
@@ -42,7 +45,7 @@ export default function HomePage() {
     const res = await riotApi.getSummonerPuuid(summonerName, summonerTag);
     return res;
   }
-
+  console.log(data)
   return (
     <div className="flex h-screen w-full">
       <div className="w-1/4 min-w-[370px] bg-blue-gray h-full pt-10">
@@ -84,7 +87,12 @@ export default function HomePage() {
           </div>
         ))}
       </div>
-      <div></div>
+      <div>
+        {data && Object?.keys(data).map((champion) => {
+          console.log(data[champion])
+          return <Image src={data[champion].championImg} alt="champion" key={data[champion].championId} width={20} height={20}/>
+        })} 
+      </div>
     </div>
   );
 }
