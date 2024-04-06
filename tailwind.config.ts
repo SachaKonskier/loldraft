@@ -22,6 +22,11 @@ const config = {
     },
     extend: {
       colors: {
+        veryLow: "#F04438", 
+        low: '#FD853A',
+        medium: '#FEC84B',
+        high: '#24B299',
+        veryHigh: '#039855',
         'light-green': 'hsl(var(--light-green))',
         'blue-gray': 'hsl(var(--blue-gray))',
         'esport-blue': 'hsl(var(--esport-blue))',

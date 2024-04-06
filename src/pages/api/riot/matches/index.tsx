@@ -133,7 +133,7 @@ function mergeData(data: IChampionOutput[]) {
       stats.killParticipation = (stats.killParticipation / stats.totalGames).toFixed(2);
       stats.winrate = ((stats.wins / stats.totalGames) * 100).toFixed(2);
       stats.championImg = `/assets/champion/${stats.name}.png`;
-      stats.championBgImg = `assets/background/${stats.name}.jpg`
+      stats.championBgImg = `/assets/background/${stats.name}.jpg`
     }
   
 

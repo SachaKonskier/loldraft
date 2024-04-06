@@ -5,8 +5,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
 import { RiotApi } from "@/modules/riot/riot.api";
 
-import Image from 'next/image';
-import { IChampionOutput } from "@/types/champions/champions";
+
+import ChampionCard from "@/components/championCard";
 interface puuid {
   puuid: string;
 }
@@ -50,7 +50,7 @@ export default function HomePage() {
     <div className="flex h-screen w-full">
       <div className="w-1/4 min-w-[370px] bg-blue-gray h-full pt-10">
         <div className="flex items center px-8 py-5">
-          <h1 className="uppercase text-white font-poppins text-5xl italic font-extrabold">
+          <h1 className="uppercase text-white font-outfit text-5xl italic font-extrabold">
             players
           </h1>
           <button className="w-[42px] h-[42px] bg-light-green rounded-lg rotate-45 ml-auto">
@@ -87,10 +87,10 @@ export default function HomePage() {
           </div>
         ))}
       </div>
-      <div>
+      <div className="px-8 py-5">
         {data && Object?.keys(data).map((champion) => {
           console.log(data[champion])
-          return <Image src={data[champion].championImg} alt="champion" key={data[champion].championId} width={20} height={20}/>
+          return <div key={data[champion].championId}><ChampionCard champion={data[champion]} /></div>
         })} 
       </div>
     </div>
