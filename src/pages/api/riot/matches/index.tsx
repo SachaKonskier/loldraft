@@ -11,7 +11,7 @@ export default async function handler(
     query: { puuid, matches, summonerPuuid },
   } = req;
   const id = puuid;
-  if (req.method === "GET") {
+  if (req.method === 'GET') {
     if (puuid) {
       // Handle request for fetching matches by PUUID
       await handleMatchesByPuuid(id as string, res);
@@ -19,10 +19,10 @@ export default async function handler(
       // Handle request for fetching matches by match IDs
       await handleMatchesByIds(matches as any, summonerPuuid as string, res);
     } else {
-      res.status(400).json({ message: "Missing parameters" });
+      res.status(400).json({ message: 'Missing parameters' });
     }
   } else {
-    res.status(405).json({ message: "Method Not Allowed" });
+    res.status(405).json({ message: 'Method Not Allowed' });
   }
 }
 
@@ -34,8 +34,8 @@ async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
 
     res.status(200).json(result);
   } catch (error) {
-    console.error("Error fetching matches:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('Error fetching matches:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 }
 
@@ -44,7 +44,7 @@ async function handleMatchesByIds(
   puuid: string,
   res: NextApiResponse
 ) {
-  const stringToMatchesArray = matches.split(",");
+  const stringToMatchesArray = matches.split(',');
 
   try {
     const results: IChampionOutput[] = [];
@@ -67,9 +67,7 @@ async function handleMatchesByIds(
           win: element.win,
           timePlayed: element.timePlayed,
           partyType: res.info.gameMode,
-          kda: parseFloat(
-            ((element.kills + element.assists) / element.deaths).toFixed(2)
-          ),
+          kda: getKda(element.kills, element.deaths, element.assists),
           killParticipation: getKillParticipation(res.info.participants, puuid),
           csPerMinute: parseFloat(
             (element.totalMinionsKilled / (element.timePlayed / 60)).toFixed(2)
@@ -78,7 +76,7 @@ async function handleMatchesByIds(
         }))
         .filter(
           (element: any) =>
-            element.partyType !== "ARAM" && element.partyType !== "URF"
+            element.partyType !== 'ARAM' && element.partyType !== 'URF'
         );
       results.push(...filteredDataByPuuid);
     }
@@ -96,8 +94,8 @@ async function handleMatchesByIds(
 
     res.send(sortedChampionsData);
   } catch (error) {
-    console.error("Error fetching matches:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('Error fetching matches:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 }
 
@@ -113,8 +111,12 @@ function getKillParticipation(participants: any[], puuid: string) {
     0
   );
   return parseFloat(
-    (((player.kills + player.assists) / teamKills) * 100).toFixed(2)
+    (((player.kills + player.assists) / teamKills) * 100).toFixed(1)
   );
+}
+function getKda(kills: number, deaths: number, assists: number) {
+  console.log('kills', kills, 'deaths', deaths, 'assists', assists);
+  return parseFloat(((kills + assists) / deaths).toString());
 }
 
 function mergeData(data: IChampionOutput[]) {
