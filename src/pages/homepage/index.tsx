@@ -1,5 +1,7 @@
 import PlayerCardComponent from "@/components/playerCard";
 
+
+
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
@@ -27,7 +29,7 @@ export default function HomePage() {
       const filteredMatches = await riotApi.getFilteredMatchList(
         summonerPuuid?.puuid,
         matches
-      );
+      )
       setData(filteredMatches);
     
     } else {
@@ -87,12 +89,14 @@ export default function HomePage() {
           </div>
         ))}
       </div>
-      <div className="px-8 py-5">
-        {data && Object?.keys(data).map((champion) => {
-          console.log(data[champion])
-          return <div key={data[champion].championId}><ChampionCard champion={data[champion]} /></div>
-        })} 
-      </div>
+      
+      <div className="px-8 py-5 w-full">
+  {data && Object?.keys(data).map((champion) => (
+    <div className="" key={data[champion].championId}>
+      <ChampionCard champion={data[champion]} />
+    </div>
+  ))}
+</div>
     </div>
   );
 }
