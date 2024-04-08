@@ -20,7 +20,7 @@ export const RiotApi: RiotService = {
       }
 
       const res = await response.json();
-      console.log('res', res);
+
       if (res.status && res.status.status_code === 404) {
         return 'error summoner not found';
       }

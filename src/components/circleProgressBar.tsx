@@ -6,7 +6,7 @@ interface CircularProgressBarProps {
 }
 export default function CircularProgressBar({ percentage, color, size = 16, isDiplayed = false }: CircularProgressBarProps) {
   // Define the function to determine the color based on the given value
-  function filledColorSwitch(color) {
+  function filledColorSwitch(color:string) {
     switch (color) {
       case 'text-veryLow':
         return '#F04438';
@@ -25,9 +25,10 @@ export default function CircularProgressBar({ percentage, color, size = 16, isDi
 
   // Determine the filled color based on the input color
   const filledColor = filledColorSwitch(color);
-  console.log(color);
+
   // Convert the percentage to a number
   const percentageNumber = Number(percentage);
+
   // Calculate the angle based on the percentage
   const angle = (percentageNumber / 100) * 360;
 

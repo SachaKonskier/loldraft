@@ -29,7 +29,7 @@ export default async function handler(
 async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   try {
     const result = await fetch(
-      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=10&api_key=${apiKey}`
+      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=20&api_key=${apiKey}`
     ).then((response) => response.json());
 
     res.status(200).json(result);
@@ -111,12 +111,12 @@ function getKillParticipation(participants: any[], puuid: string) {
     0
   );
   return parseFloat(
-    (((player.kills + player.assists) / teamKills) * 100).toFixed(1)
+    (((player.kills + player.assists) / teamKills) * 100).toFixed(2)
   );
 }
 function getKda(kills: number, deaths: number, assists: number) {
-  console.log('kills', kills, 'deaths', deaths, 'assists', assists);
-  return parseFloat(((kills + assists) / deaths).toString());
+ 
+  return parseFloat(((kills + assists) / deaths).toFixed(2));
 }
 
 function mergeData(data: IChampionOutput[]) {

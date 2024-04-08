@@ -90,7 +90,7 @@ export default function HomePage() {
         ))}
       </div>
       
-      <div className="px-8 py-5 w-full">
+      <div className="px-8 py-5 flex flex-wrap gap-4">
   {data && Object?.keys(data).map((champion) => (
     <div className="" key={data[champion].championId}>
       <ChampionCard champion={data[champion]} />
