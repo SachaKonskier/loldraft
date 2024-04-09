@@ -36,4 +36,5 @@ export interface IChampionDisplayedData {
     winrate: string;
     wins: number;
     timePlayed: number;
+    totalFetchedGames: number;
 }

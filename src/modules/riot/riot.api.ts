@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { RiotService } from "./riot.service";
+import { error } from "console";
 
 const backendUrl = process.env.BACKEND_URL;
 // RiotAPI Interface implementation
@@ -14,15 +15,18 @@ export const RiotApi: RiotService = {
     try {
       const response = await fetch(`${backendUrl}/riot/summoner?summonerName=${summonerName}&summonerTag=${summonerTag}`)
     
- 
+
       if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const res = await response.json();
-      console.log('res', res);
+
       if (res.status && res.status.status_code === 404) {
-        return 'error summoner not found';
+        return { error: 'error summoner not found' };
+      }
+      if (res.status && res.status.status_code === 400) {
+        return { error: 'error summoner not found' };
       }
      if(res && res.puuid) {
       return {puuid: res.puuid};
