@@ -110,8 +110,9 @@ function getKillParticipation(participants: any[], puuid: string) {
     (acc, participant) => acc + participant.kills,
     0
   );
+  if (player.kills === 0 && player.assists === 0 && teamKills === 0) return 0;
   return parseFloat(
-    (((player.kills + player.assists) / teamKills) * 100).toFixed(2)
+    (((player.kills  + player.assists) / teamKills) * 100).toFixed(2)
   );
 }
 function getKda(kills: number, deaths: number, assists: number) {

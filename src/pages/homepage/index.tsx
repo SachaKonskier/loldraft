@@ -41,6 +41,7 @@ export default function HomePage() {
       handleAddPlayerCard();
     }
   }
+  console.log(data)
   async function getSummoner() {
     const summonerName = playerInput.split("#")[0];
     const summonerTag = playerInput.split("#")[1];
