@@ -1,6 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
 import { RiotService } from "./riot.service";
-import { error } from "console";
 
 const backendUrl = process.env.BACKEND_URL;
 // RiotAPI Interface implementation
@@ -36,6 +34,11 @@ export const RiotApi: RiotService = {
       throw error;
   }
   },
+  /**
+   * Riot API
+   * @param puuid
+   * @returns rawMatchList
+   * */
   getRawMatchList: async (puuid) => {
     try {
       const response = await fetch(`${backendUrl}/riot/matches?puuid=${puuid}`);
@@ -49,6 +52,12 @@ export const RiotApi: RiotService = {
       throw error;
   }
   },
+  /**
+   * Riot API
+   * @param puuid
+   * @param matches
+   * @returns filteredMatchList
+   * */
   getFilteredMatchList: async (puuid, matches) => {
     try {
       const response = await fetch(`${backendUrl}/riot/matches?matches=${matches}&summonerPuuid=${puuid}`);

@@ -116,7 +116,6 @@ function getKillParticipation(participants: any[], puuid: string) {
   );
 }
 function getKda(kills: number, deaths: number, assists: number) {
- 
   return parseFloat(((kills + assists) / deaths).toFixed(2));
 }
 
