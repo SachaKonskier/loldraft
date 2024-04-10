@@ -6,6 +6,7 @@ import { useState } from "react";
 import { RiotApi } from "@/modules/riot/riot.api";
 
 import ChampionCard from "@/components/championCard";
+import { getSession } from "next-auth/react";
 
 const riotApi = RiotApi;
 export default function HomePage() {
@@ -104,4 +105,20 @@ export default function HomePage() {
       </div>
     </div>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+
+  if (!session) {
+    //if not exists, return a temporary 302 and replace the url with the given in Location.
+    context.res.writeHead(302, { Location: '/signin' });
+    context.res.end();
+
+    // do not return any session.
+    return { props: { session: null } };
+  }
+
+  // Return the session object when it exists
+  return { props: { session } };
 }

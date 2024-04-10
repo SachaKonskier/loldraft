@@ -13,7 +13,7 @@ export default function SignIn() {
     })
       .then((response) => {
         console.log(response);
-        router.replace("/");
+        router.replace("/homepage");
       })
       .catch((error) => {
         console.log(error);
