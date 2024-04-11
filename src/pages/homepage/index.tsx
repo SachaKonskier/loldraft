@@ -48,7 +48,7 @@ export default function HomePage() {
   
     return res;
   }
-
+  console.log('data', data)
   return (
     <div className="flex h-screen w-full">
       <div className="w-1/4 min-w-[370px] bg-blue-gray h-auto pt-10">
