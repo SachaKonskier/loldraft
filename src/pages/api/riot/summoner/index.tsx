@@ -6,6 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const {query: {summonerName, summonerTag}} = req;
     if (req.method === 'GET') {
        const result = await fetch(`${riotUrl}/${summonerName}/${summonerTag}?api_key=${apiKey}`, {method: 'GET', redirect:"follow"}).then((response) => response.json());
+       console.log(result)
        res.send(result);
     } 
     else {

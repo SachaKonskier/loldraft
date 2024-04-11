@@ -12,7 +12,7 @@ export const RiotApi: RiotService = {
   getSummonerPuuid: async (summonerName, summonerTag) => {
     try {
       const response = await fetch(`${backendUrl}/riot/summoner?summonerName=${summonerName}&summonerTag=${summonerTag}`)
-    
+      console.log(response)
 
       if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
