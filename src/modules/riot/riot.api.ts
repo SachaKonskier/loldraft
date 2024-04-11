@@ -11,7 +11,7 @@ const backendUrl = process.env.BACKEND_URL;
 export const RiotApi: RiotService = {
   getSummonerPuuid: async (summonerName, summonerTag) => {
     try {
-      const response = await fetch(`${backendUrl}/riot/summoner?summonerName=${summonerName}&summonerTag=${summonerTag}`)
+      const response = await fetch(`api/getSummoner?summonerName=${summonerName}&summonerTag=${summonerTag}`)
       console.log(response)
 
       if (!response.ok) {
@@ -41,7 +41,7 @@ export const RiotApi: RiotService = {
    * */
   getRawMatchList: async (puuid) => {
     try {
-      const response = await fetch(`${backendUrl}/riot/matches?puuid=${puuid}`);
+      const response = await fetch(`api/getMatches?puuid=${puuid}`);
       if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -60,7 +60,7 @@ export const RiotApi: RiotService = {
    * */
   getFilteredMatchList: async (puuid, matches) => {
     try {
-      const response = await fetch(`${backendUrl}/riot/matches?matches=${matches}&summonerPuuid=${puuid}`);
+      const response = await fetch(`api/getMatches?matches=${matches}&summonerPuuid=${puuid}`);
       if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
       }
