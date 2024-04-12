@@ -29,7 +29,11 @@ export default async function handler(
 async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   try {
     const result = await fetch(
-      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=20&api_key=${apiKey}`
+      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=20&api_key=${apiKey}`, {
+        headers: {
+          'content-type': 'application/json',
+        }
+      }
     ).then((response) => response.json());
 
     res.status(200).json(result);
