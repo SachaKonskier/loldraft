@@ -12,12 +12,8 @@ const apiKey = process.env.RIOT_API_KEY;
 export const RiotApi: RiotService = {
   getSummonerPuuid: async (summonerName, summonerTag) => {
     try {
-      const response = await fetch(`api/riot/summoner?summonerName=${summonerName}&summonerTag=${summonerTag}`,  {
-        method: "GET",
-        redirect: "follow",
-     
-      })
-      console.log(response)
+      const response = await fetch(`${backendUrl}/riot/summoner?summonerName=${summonerName}&summonerTag=${summonerTag}`)
+    
 
       if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
