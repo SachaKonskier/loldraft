@@ -3,9 +3,16 @@ const riotUrl =
   "https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id";
 const apiKey = process.env.RIOT_API_KEY;
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+
     const {query: {summonerName, summonerTag}} = req;
     if (req.method === 'GET') {
-       const result = await fetch(`${riotUrl}/${summonerName}/${summonerTag}?api_key=${apiKey}`, {method: 'GET', redirect:"follow", }).then((response) => response.json());
+       const result = await fetch(`${riotUrl}/${summonerName}/${summonerTag}`,  {
+    
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `X-Riot-Token ${apiKey}`,
+        },
+      }).then((response) => response.json());
        console.log(result)
        res.send(result);
     } 

@@ -10,18 +10,24 @@ export default async function handler(
     query: { summonerName, summonerTag },
   } = req;
   if (req.method === "GET") {
+   
     const result = await fetch(
-      `${riotUrl}/${summonerName}/${summonerTag}`,
+      `${riotUrl}/${summonerName}/${summonerTag}?api_key=${apiKey}`,
       {
         method: "GET",
         redirect: "follow",
+        
         headers: {
           "Content-Type": "application/json",
-          authorization: `X-Riot-Token ${apiKey}`,
+          Authorization: `X-Riot-Token ${apiKey}`,
+          Origin: "https://developer.riotgames.com",
+          accept: "application/json",
+          "accept-format": "application/json",
+          "accept-charset": "application/x-www-form-urlencoded; charset=UTF-8",
         },
       }
     ).then((response) => response.json());
-    console.log(result);
+    console.log('result', result);
     res.send(result);
   } else {
     res.status(405).send({ message: "Method Not Allowed" });
