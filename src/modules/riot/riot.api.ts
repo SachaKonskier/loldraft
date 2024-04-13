@@ -12,7 +12,7 @@ const apiKey = process.env.RIOT_API_KEY;
 export const RiotApi: RiotService = {
   getSummonerPuuid: async (summonerName, summonerTag) => {
     try {
-      const response = await fetch(`${backendUrl}/riot/summoner?summonerName=${summonerName}&summonerTag=${summonerTag}`)
+      const response = await fetch(`api/riot/summoner?summonerName=${summonerName}&summonerTag=${summonerTag}`)
     
 
       if (!response.ok) {
@@ -67,7 +67,7 @@ export const RiotApi: RiotService = {
    * */
   getFilteredMatchList: async (puuid, matches) => {
     try {
-      const response = await fetch(`api/getMatches?matches=${matches}&summonerPuuid=${puuid}`);
+      const response = await fetch(`api/riot/matches?matches=${matches}&summonerPuuid=${puuid}`);
       if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
       }

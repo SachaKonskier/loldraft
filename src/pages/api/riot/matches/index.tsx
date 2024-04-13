@@ -29,14 +29,13 @@ export default async function handler(
 async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   try {
     const result = await fetch(
-      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=20`, {method: "GET",
+      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=20&api_key=${apiKey}`, {method: "GET",
       redirect: "follow",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `X-Riot-Token ${apiKey}`,
       },}
     ).then((response) => response.json());
-
+    console.log(result)
     res.status(200).json(result);
   } catch (error) {
     console.error('Error fetching matches:', error);
@@ -45,7 +44,7 @@ async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
 }
 
 async function handleMatchesByIds(
-  matches: string,
+  matches: any,
   puuid: string,
   res: NextApiResponse
 ) {
