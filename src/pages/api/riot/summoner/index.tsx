@@ -11,7 +11,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         redirect: "follow",
        
       }).then((response) => response.json());
-       console.log(result)
        res.send(result);
     } 
     else {

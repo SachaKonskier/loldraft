@@ -35,7 +35,6 @@ async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
         "Content-Type": "application/json",
       },}
     ).then((response) => response.json());
-    console.log(result)
     res.status(200).json(result);
   } catch (error) {
     console.error('Error fetching matches:', error);

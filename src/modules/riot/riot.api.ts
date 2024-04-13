@@ -20,7 +20,7 @@ export const RiotApi: RiotService = {
       }
 
       const res = await response.json();
-      console.log(res)
+     
       if (res.status && res.status.status_code === 401) {
         return { error: 'error Unauthorized' };
       }
@@ -34,7 +34,7 @@ export const RiotApi: RiotService = {
         return { error: 'error summoner not found' };
       }
      if(res && res.puuid) {
-      return {puuid: res.puuid};
+      return {puuid: res.puuid, gameName: res.gameName, tagLine: res.tagLine};
     }
   } catch (error) {
       console.error('Error fetching data:', error);

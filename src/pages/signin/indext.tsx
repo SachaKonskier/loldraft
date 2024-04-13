@@ -12,7 +12,6 @@ export default function SignIn() {
       password,
     })
       .then((response) => {
-        console.log(response);
         router.replace("/homepage");
       })
       .catch((error) => {

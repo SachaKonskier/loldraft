@@ -16,13 +16,13 @@ export default function HomePage() {
   //  store the input value in the state players
   const handleAddPlayerCard = async () => {
     const summonerPuuid = (await getSummoner()) as any;
-
+    console.log(summonerPuuid)
     if (summonerPuuid?.error && summonerPuuid.error?.includes("error")) {
       setError("We are not able to find this account");
       return;
     }
     if (summonerPuuid?.puuid) {
-      setPlayers([...players, playerInput]);
+      setPlayers([...players, `${summonerPuuid.gameName}#${summonerPuuid.tagLine}`]);
       setError(null);
       const matches = (await riotApi.getRawMatchList(
         summonerPuuid?.puuid
@@ -48,7 +48,7 @@ export default function HomePage() {
   
     return res;
   }
-  console.log('data', data)
+ console.log(players)
   return (
     <div className="flex h-screen w-full">
       <div className="w-1/4 min-w-[370px] bg-blue-gray h-auto pt-10">
@@ -94,10 +94,10 @@ export default function HomePage() {
         ))}
       </div>
 
-      <div className="px-8 py-5 flex flex-wrap gap-4">
+      <div className="px-8 py-5 grid grid-cols-2 gap-4">
         {data &&
           Object?.keys(data).map((champion) => (
-            <div className="" key={data[champion].championId}>
+            <div className="w-full" key={data[champion].championId}>
               <ChampionCard champion={data[champion]} />
             </div>
           ))}

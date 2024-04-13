@@ -74,11 +74,9 @@ export default function ChampionCard({
 
   return (
     <div
-      className={`shadow-md px-4 py-3 relative my-2 ${
-        parseFloat(pickRate) > 49 ? `w-full` : "w-full"
-      }`}
+      className={`shadow-md px-4 py-3 relative my-2 w-full`}
     >
-      <div className="absolute inset-0 rounded-md overflow-hidden opacity-80">
+      <div className={`absolute inset-0 rounded-md overflow-hidden opacity-80 `}>
         <Image
           src={champion.championBgImg}
           alt={champion.name}

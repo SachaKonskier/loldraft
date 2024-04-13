@@ -18,7 +18,7 @@ export default function PlayerCardComponent({ player }: { player: string }) {
   const deleteAccountOnClick = (account: string) => {
     setSubAccounts(subAccounts.filter((item) => item !== account));
   };
-  
+  console.log(player)
   return (
     <div className="w-[320px] max-h-[220px] h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-br via-white/40 from-light-green overflow-x-auto">
       <div className="text-white pb-2 justify-center flex">
