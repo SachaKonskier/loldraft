@@ -6,6 +6,7 @@ import { useState } from "react";
 import { RiotApi } from "@/modules/riot/riot.api";
 
 import ChampionCard from "@/components/championCard";
+import { IChampionDisplayedData } from "@/types/champions/champions";
 
 const riotApi = RiotApi;
 export default function HomePage() {
@@ -16,13 +17,16 @@ export default function HomePage() {
   //  store the input value in the state players
   const handleAddPlayerCard = async () => {
     const summonerPuuid = (await getSummoner()) as any;
-    console.log(summonerPuuid)
+    console.log(summonerPuuid);
     if (summonerPuuid?.error && summonerPuuid.error?.includes("error")) {
       setError("We are not able to find this account");
       return;
     }
     if (summonerPuuid?.puuid) {
-      setPlayers([...players, `${summonerPuuid.gameName}#${summonerPuuid.tagLine}`]);
+      setPlayers([
+        ...players,
+        `${summonerPuuid.gameName}#${summonerPuuid.tagLine}`,
+      ]);
       setError(null);
       const matches = (await riotApi.getRawMatchList(
         summonerPuuid?.puuid
@@ -45,10 +49,13 @@ export default function HomePage() {
     const summonerName = playerInput.split("#")[0];
     const summonerTag = playerInput.split("#")[1];
     const res = await riotApi.getSummonerPuuid(summonerName, summonerTag);
-  
+
     return res;
   }
- console.log(players)
+  const pickRate = (data: IChampionDisplayedData) =>
+    ((data.totalGames / data.totalFetchedGames) * 100).toFixed(0);
+
+  console.log(pickRate);
   return (
     <div className="flex h-screen w-full">
       <div className="w-1/4 min-w-[370px] bg-blue-gray h-auto pt-10">
@@ -65,10 +72,15 @@ export default function HomePage() {
           <div className="relative gap-2  h-16 flex w-[320px]  rounded-lg ring-light-green ring-1 p-3">
             <input
               type="text"
-              className={`w-full h-full  px-3 py-2 text-gray-400 rounded-lg focus:outline-none caret-light-green ${error ? "text-red-500" : ""}`}
+              className={`w-full h-full  px-3 py-2 text-gray-400 rounded-lg focus:outline-none caret-light-green ${
+                error ? "text-red-500" : ""
+              }`}
               placeholder="Game Name + #EX"
               value={playerInput}
-              onChange={(e) => {setPlayerInput(e.target.value); setError(null)}}
+              onChange={(e) => {
+                setPlayerInput(e.target.value);
+                setError(null);
+              }}
               onKeyUp={(event) => handleKeyPressed(event)}
             />
 
@@ -82,9 +94,10 @@ export default function HomePage() {
                 <SearchIcon className="text-white rotate-90" />
               </button>
             </span>
-
           </div>
-          {error && <div className="text-red-500 px-4 py-2 font-outfit">{error}</div>}
+          {error && (
+            <div className="text-red-500 px-4 py-2 font-outfit">{error}</div>
+          )}
         </div>
 
         {players.map((player) => (
@@ -93,14 +106,21 @@ export default function HomePage() {
           </div>
         ))}
       </div>
-
-      <div className="px-8 py-5 grid grid-cols-2 gap-4">
-        {data &&
-          Object?.keys(data).map((champion) => (
-            <div className="w-full" key={data[champion].championId}>
-              <ChampionCard champion={data[champion]} />
-            </div>
-          ))}
+      <div>
+        {" "}
+        <div className="px-8 py-5 grid grid-cols-2 gap-4 w-auto h-auto">
+          {data &&
+            Object?.keys(data).map((champion) => (
+              <div
+                className={`${
+                  parseFloat(pickRate(data[champion])) > 33 ? "col-span-2" : ""
+                }`}
+                key={data[champion].championId}
+              >
+                <ChampionCard champion={data[champion]} />
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );
