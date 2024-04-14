@@ -1,26 +1,26 @@
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import SearchIcon from '@mui/icons-material/Search';
-import CloseIcon from '@mui/icons-material/Close';
-import svgTop from '../../public/top.svg';
-import Image from 'next/image';
-import { useState } from 'react';
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
+import svgTop from "../../public/top.svg";
+import Image from "next/image";
+import { useState } from "react";
 export default function PlayerCardComponent({ player }: { player: string }) {
-  const [playerInput, setPlayerInput] = useState('');
+  const [playerInput, setPlayerInput] = useState("");
   const [subAccounts, setSubAccounts] = useState<string[]>([]);
   const handleSubAccountOnClick = () => {
     setSubAccounts([...subAccounts, playerInput]);
   };
   function handleKeyPressed(event: any) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       handleSubAccountOnClick();
     }
   }
   const deleteAccountOnClick = (account: string) => {
     setSubAccounts(subAccounts.filter((item) => item !== account));
   };
- 
+
   return (
-    <div className="w-[320px] max-h-[220px] h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-br via-white/40 from-light-green overflow-x-auto">
+    <div className="max-w-[320px] max-h-[220px] h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-br via-white/40 from-light-green overflow-x-auto">
       <div className="text-white pb-2 justify-center flex">
         <Image src={svgTop} alt="My SVG" width={24} height={24} />
         <span className="pl-4 font-semibold">{player}</span>
@@ -35,7 +35,6 @@ export default function PlayerCardComponent({ player }: { player: string }) {
             <button
               className="ml-auto"
               onClick={() => deleteAccountOnClick(account)}
-              
             >
               <CloseIcon className="text-red-600" />
             </button>
