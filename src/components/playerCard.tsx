@@ -20,11 +20,16 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
       setSubAccounts([...subAccounts, player]);
     
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [player]);
+  }, []);
   const handleSubAccountOnClick = async () => {
     const summoner = (await getSummoner(playerInput)) as any;
     if (summoner?.error && summoner.error?.includes("error")) {
       setError("We are not able to find this account");
+      return;
+    }
+    if (subAccounts.map((item:any) => item.puuid === summoner.puuid)) {
+      console.log('already added')
+      setError('This account is already added')
       return;
     }
     if (summoner?.puuid) {
@@ -38,9 +43,7 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
       handleSubAccountOnClick();
     }
   }
-  const deletePlayerOnClick = (player: any) => {
-     player = [];
-  }
+
   const deleteAccountOnClick = (account: string) => {
     setSubAccounts(subAccounts.filter((item: any) => item !== account));
   };
@@ -99,23 +102,13 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
           </div>
         </div>
       )}
-      {/* {player && (
-        <div className="flex items-center w-full gap-2">
-          {openModal &&  <button
-              className="ml-auto"
-              onClick={() => deletePlayerOnClick(player)}
-            >
-              <CloseIcon className="text-white hover:text-red-500" />
-            </button>}
-          <p
-            className={`text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2`}
-          >
-            {`${player.gameName}#${player.tagLine}`}
-          </p>
+       {error && (
+        <div className="text-red-500 py-2 italic text-sm font-outfit">
+          {error}
         </div>
-      )} */}
+      )}
       {subAccounts.map((account: any) => (
-        <div key={account} className="flex items-center w-full gap-2 pt-2">
+        <div key={account.puuid} className="flex items-center w-full gap-2 pt-2">
           {openModal && (
             <button
               className="ml-auto"

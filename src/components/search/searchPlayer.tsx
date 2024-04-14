@@ -60,7 +60,6 @@ export default function SearchPlayer({
     }
   }
 
-  console.log(data)
   return (
     <div className="max-w-[320px] p-3 bg-gradient-to-r from-light-green to-transparent rounded-lg border border-light-green h-full w-full">
       <h1 className="text-base font-bold italic font-outfit text-white pb-3">
