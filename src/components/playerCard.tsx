@@ -16,8 +16,11 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
   const [openModal, setOpenModal] = useState(false);
   const [error, setError] = useState<any>();
   useEffect(() => {
-    
+      if (subAccounts.find((item:any) => item.puuid === player.puuid)){
+        return
+      }
       setSubAccounts([...subAccounts, player]);
+     
     
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -63,10 +66,10 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
             className=""
           />
         </p>
-        <span className="pl-4 font-semibold border border-white  h-auto w-full py-1 rounded-md">
+        <span className="pl-4 font-normal border border-white  h-auto w-full py-1 rounded-md">
           {player.gameName}
         </span>
-        <span className="ml-auto">
+        <span className="ml-auto hover:animate-pulse hover:scale-110">
           <button onClick={handleEditModal}>
             <EditOutlinedIcon className="text-white h-5 w-5" />
           </button>
@@ -77,7 +80,7 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
           <div className="relative w-full pb-2">
             <input
               type="text"
-              className={`w-full h-auto font-normal  placeholder:text-gray-600 bg-white/40 px-3 py-2 text-gray-600 rounded-lg focus:outline-none caret-light-green ${
+              className={`w-full h-auto font-normal  placeholder:text-gray-600 bg-white/40 px-3 py-2 text-gray-600 rounded-lg focus:outline-none caret-light-green  ${
                 error ? "text-red-500" : ""
               }`}
               placeholder="Game Name + #EX"
@@ -111,7 +114,7 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
         <div key={account.puuid} className="flex items-center w-full gap-2 pt-2">
           {openModal && (
             <button
-              className="ml-auto"
+              className="ml-auto hover:animate-pulse hover:scale-110"
               onClick={() => deleteAccountOnClick(account)}
             >
               <CloseIcon className="text-white hover:text-red-500" />
@@ -125,10 +128,10 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
         </div>
       ))}
      {openModal &&  <div className="pt-5 flex justify-between gap-6">
-        <button className="py-[6px] px-3 italic font-outfit text-white border-2 border-white opacity-80 rounded-lg w-[120px]">
+        <button className="py-[6px] px-3 italic font-outfit text-white border-2 border-white opacity-80 rounded-lg w-[120px] hover:border-red-500 hover:text-red-500">
           Cancel
         </button>
-        <button className="py-[6px] px-3 italic font-outfit text-white border-white opacity-80 rounded-lg w-[120px] bg-light-green">
+        <button className="py-[6px] px-3 italic font-outfit text-white border-white opacity-80 rounded-lg w-[120px] bg-light-green hover:opacity-50">
           Save
         </button>
       </div>}
