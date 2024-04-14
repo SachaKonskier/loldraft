@@ -7,6 +7,8 @@ import { RiotApi } from "@/modules/riot/riot.api";
 
 import ChampionCard from "@/components/championCard";
 import { IChampionDisplayedData } from "@/types/champions/champions";
+import { mostPlayedPosition } from "@/utils/utils";
+import ChampionsList from "@/components/championsContent/championsList";
 
 const riotApi = RiotApi;
 export default function HomePage() {
@@ -14,10 +16,10 @@ export default function HomePage() {
   const [players, setPlayers] = useState<string[]>([]);
   const [error, setError] = useState<any>();
   const [data, setData] = useState<any>();
+  
   //  store the input value in the state players
   const handleAddPlayerCard = async () => {
     const summonerPuuid = (await getSummoner()) as any;
-    console.log(summonerPuuid);
     if (summonerPuuid?.error && summonerPuuid.error?.includes("error")) {
       setError("We are not able to find this account");
       return;
@@ -54,8 +56,12 @@ export default function HomePage() {
   }
   const pickRate = (data: IChampionDisplayedData) =>
     ((data.totalGames / data.totalFetchedGames) * 100).toFixed(0);
-
-  console.log(pickRate);
+  // find most played position for all champions
+  const findPosition = data && Object.values(data)
+    .map((champion: any) => champion.positions)
+    .flat();
+  const position = mostPlayedPosition(findPosition).position;
+  console.log(position);
   return (
     <div className="flex h-screen w-full">
       <div className="w-1/4 min-w-[370px] bg-blue-gray h-auto pt-10">
@@ -106,22 +112,9 @@ export default function HomePage() {
           </div>
         ))}
       </div>
-      <div>
-        {" "}
-        <div className="px-8 py-5 grid grid-cols-2 gap-4 w-auto h-auto">
-          {data &&
-            Object?.keys(data).map((champion) => (
-              <div
-                className={`${
-                  parseFloat(pickRate(data[champion])) > 33 ? "col-span-2" : ""
-                }`}
-                key={data[champion].championId}
-              >
-                <ChampionCard champion={data[champion]} />
-              </div>
-            ))}
-        </div>
-      </div>
+      {data && (
+       <ChampionsList data={data} pickRate={pickRate} position={position} player={players[0]}/>
+      )}
     </div>
   );
 }
