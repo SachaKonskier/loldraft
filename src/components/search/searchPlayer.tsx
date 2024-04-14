@@ -1,22 +1,32 @@
+// React
 import { useEffect, useState } from "react";
+// Api Services
 import { RiotApi } from "@/modules/riot/riot.api";
-import SearchIcon from "@mui/icons-material/Search";
+// Icons
+import AddIcon from '@mui/icons-material/Add';
+// Types
+import { IPlayer } from "@/types/player";
+import { getSummoner } from "@/utils/utils";
 const TITLE = "Add a new player !";
 const riotApi = RiotApi;
 interface IProps {
   onDataUpdate: any;
   onPlayersUpdate: any;
 }
+interface Iplayer {
+  summonerName: string;
+  summonerAndTag: string;
+}
 export default function SearchPlayer({
   onDataUpdate,
   onPlayersUpdate,
 }: IProps) {
   const [playerInput, setPlayerInput] = useState("");
-  const [players, setPlayers] = useState<string[]>([]);
+  const [players, setPlayers] = useState<IPlayer[]>([]);
   const [error, setError] = useState<any>();
   const [data, setData] = useState<any>();
   const handleAddPlayerCard = async () => {
-    const summonerPuuid = (await getSummoner()) as any;
+    const summonerPuuid = (await getSummoner(playerInput)) as any;
     if (summonerPuuid?.error && summonerPuuid.error?.includes("error")) {
       setError("We are not able to find this account");
       return;
@@ -24,7 +34,7 @@ export default function SearchPlayer({
     if (summonerPuuid?.puuid) {
       setPlayers([
         ...players,
-        `${summonerPuuid.gameName}#${summonerPuuid.tagLine}`,
+      summonerPuuid
       ]);
       setError(null);
       const matches = (await riotApi.getRawMatchList(
@@ -49,13 +59,8 @@ export default function SearchPlayer({
       handleAddPlayerCard();
     }
   }
-  async function getSummoner() {
-    const summonerName = playerInput.split("#")[0];
-    const summonerTag = playerInput.split("#")[1];
-    const res = await riotApi.getSummonerPuuid(summonerName, summonerTag);
 
-    return res;
-  }
+  console.log(data)
   return (
     <div className="max-w-[320px] p-3 bg-gradient-to-r from-light-green to-transparent rounded-lg border border-light-green h-full w-full">
       <h1 className="text-base font-bold italic font-outfit text-white pb-3">
@@ -64,7 +69,7 @@ export default function SearchPlayer({
       <div className="relative">
         <input
           type="text"
-          className={`w-full h-auto font-normal  px-3 py-2 text-slate-400 rounded-lg focus:outline-none caret-light-green ${
+          className={`w-full h-auto font-normal placeholder:text-gray-600 bg-white/40 px-3 py-2 text-gray-600 rounded-lg focus:outline-none caret-light-green ${
             error ? "text-red-500" : ""
           }`}
           placeholder="Game Name + #EX"
@@ -83,7 +88,7 @@ export default function SearchPlayer({
             type="submit"
             onClick={() => handleAddPlayerCard()}
           >
-            <SearchIcon className="text-white rotate-90" />
+            <AddIcon className="text-white rotate-90" />
           </button>
         </span>
       </div>

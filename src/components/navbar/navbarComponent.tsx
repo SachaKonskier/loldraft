@@ -66,7 +66,7 @@ export default function NavbarComponent({fetchData}: {fetchData: any}) {
         <div className="relative gap-2  h-16 flex w-[320px]  rounded-lg ring-light-green ring-1 p-3">
           <input
             type="text"
-            className={`w-full h-full  px-3 py-2 text-gray-400 rounded-lg focus:outline-none caret-light-green ${
+            className={`w-full h-full  px-3 py-2 text-slate-800 bg-white/40 rounded-lg focus:outline-none caret-light-green ${
               error ? "text-red-500" : ""
             }`}
             placeholder="Game Name + #EX"

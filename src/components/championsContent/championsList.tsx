@@ -13,7 +13,7 @@ interface IProps {
   data: any;
   pickRate: any;
   position: string;
-  player: string;
+  player: any;
 }
 const positionSvgMap: Record<string, string> = {
   TOP: topSvg,
@@ -42,7 +42,7 @@ export default function ChampionsList({
             className=" bg-gray-400/40 rounded-md"
           />
           <p className=" uppercase text-white font-outfit text-xl italic font-semibold">
-            {player}
+            {player.gameName}
           </p>
         </div>
         {data &&
