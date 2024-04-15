@@ -26,10 +26,34 @@ export default function SearchPlayer({
   const [error, setError] = useState<any>();
   const [data, setData] = useState<any>();
   const handleAddPlayerCard = async () => {
+
+    if (!checkInputFormat(playerInput)) {
+      return;
+    }
     const summonerPuuid = (await getSummoner(playerInput)) as any;
     if (summonerPuuid?.error && summonerPuuid.error?.includes("error")) {
       setError("We are not able to find this account");
       return;
+    }
+    function checkInputFormat(input: string) {
+      // if the the input is more that 22 char it's not a valid input
+  
+      // if the input has more than one # it's not a valid input
+      if (input.split("#").length > 2) {
+        setError("Invalid format input: too many #");
+        return false;
+      }
+      // if the input before the split is more that 16 char it's not a valid input
+      if (input.split("#")[0].length > 16) {
+        setError("Invalid format input: too long before # (max 16)");
+        return false;
+      }
+      // if the input after the split is more that 6 char it's not a valid input
+      if (input.split("#")[0].length <=16 && input.split("#")[1].length > 5) {
+        setError("Invalid format input: too long after # (max 5)");
+        return false;
+      }
+      return true;
     }
     if (summonerPuuid?.puuid) {
       setPlayers([
