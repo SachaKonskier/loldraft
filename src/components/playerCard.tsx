@@ -30,7 +30,7 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
       setError("We are not able to find this account");
       return;
     }
-    if (subAccounts.map((item:any) => item.puuid === summoner.puuid)) {
+    if (subAccounts.find((item:any) => item.puuid === summoner.puuid)) {
       console.log('already added')
       setError('This account is already added')
       return;
@@ -53,7 +53,7 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
   function handleEditModal() {
     setOpenModal(!openModal);
   }
-  console.log("in playerCard", player);
+
   return (
     <div className=" max-w-[320px] w-auto h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-r from-light-green to-transparent overflow-x-auto">
       <div className="text-white pb-5 justify-center items-center flex gap-4 h-auto w-full">
@@ -114,10 +114,11 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
         <div key={account.puuid} className="flex items-center w-full gap-2 pt-2">
           {openModal && (
             <button
-              className="ml-auto hover:animate-pulse hover:scale-110"
+              className="ml-auto enabled:hover:animate-pulse enabled:hover:scale-110 disabled:opacity-50"
               onClick={() => deleteAccountOnClick(account)}
+              disabled={subAccounts.length === 1}
             >
-              <CloseIcon className="text-white hover:text-red-500" />
+              <CloseIcon className="text-white enabled:hover:text-red-500 disabled:" />
             </button>
           )}
           <p
@@ -127,14 +128,6 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
           </p>
         </div>
       ))}
-     {openModal &&  <div className="pt-5 flex justify-between gap-6">
-        <button className="py-[6px] px-3 italic font-outfit text-white border-2 border-white opacity-80 rounded-lg w-[120px] hover:border-red-500 hover:text-red-500">
-          Cancel
-        </button>
-        <button className="py-[6px] px-3 italic font-outfit text-white border-white opacity-80 rounded-lg w-[120px] bg-light-green hover:opacity-50">
-          Save
-        </button>
-      </div>}
     </div>
   );
 }
