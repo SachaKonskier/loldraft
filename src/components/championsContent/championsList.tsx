@@ -18,9 +18,9 @@ interface IProps {
 const positionSvgMap: Record<string, string> = {
   TOP: topSvg,
   JUNGLE: jungleSvg,
-  MID: midSvg,
-  ADC: adcSvg,
-  SUPPORT: supportSvg,
+  MIDDLE: midSvg,
+  BOTTOM: adcSvg,
+  UTILITY: supportSvg,
 };
 
 export default function ChampionsList({
