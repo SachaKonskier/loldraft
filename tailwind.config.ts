@@ -29,6 +29,7 @@ const config = {
         veryHigh: '#039855',
         'light-green': 'hsl(var(--light-green))',
         'darkGray': 'hsl(var(--darkGray))',
+        'lightGray': 'hsl(var(--lightGray))',
         'blue-gray': 'hsl(var(--blue-gray))',
         'esport-blue': 'hsl(var(--esport-blue))',
         'custom-error': 'hsl(var(--custom-error))',

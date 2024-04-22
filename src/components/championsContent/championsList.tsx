@@ -30,8 +30,9 @@ export default function ChampionsList({
   player,
 }: IProps) {
   const positionSvg = positionSvgMap[position.toUpperCase()] || topSvg;
+
   return (
-    <div className="w-auto  h-full bg-darkGray p-12 overflow-y-scroll">
+    <div className="w-full  h-full bg-darkGray p-12 overflow-y-scroll">
       <div className="relative px-8 py-5 grid grid-cols-2 gap-4 w-full h-auto bg-blue-gray rounded-lg">
         <div className="flex items-center absolute gap-4 -top-4 -left-2">
           <Image

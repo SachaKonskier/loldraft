@@ -12,8 +12,8 @@ export const mostPlayedPosition = (positions: any) => {
 }
 
 export async function getSummoner(input:string) {
-    const summonerName = input.split("#")[0];
-    const summonerTag = input.split("#")[1];
+    const summonerName = input.split("#")[0] ?? '';
+    const summonerTag = input.split("#")[1] ?? '';
     const result = await riotApi.getSummonerPuuid(summonerName, summonerTag);
     return result;
 }

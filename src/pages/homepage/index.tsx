@@ -11,9 +11,7 @@ import { mostPlayedPosition } from "@/utils/utils";
 // Types
 import { IChampionDisplayedData } from "@/types/champions/champions";
 
-
 export default function HomePage() {
-
   const [players, setPlayers] = useState<string[]>([]);
 
   const [data, setData] = useState<any>();
@@ -28,9 +26,11 @@ export default function HomePage() {
   const pickRate = (data: IChampionDisplayedData) =>
     ((data.totalGames / data.totalFetchedGames) * 100).toFixed(0);
   // find most played position for all champions
-  const findPosition = data && Object.values(data)
-    .map((champion: any) => champion.positions)
-    .flat();
+  const findPosition =
+    data &&
+    Object.values(data)
+      .map((champion: any) => champion.positions)
+      .flat();
   const position = mostPlayedPosition(findPosition).position;
   console.log(position);
   return (
@@ -46,8 +46,10 @@ export default function HomePage() {
         </div>
         <div className="px-8 py-5">
           {/* input field */}
-          <SearchPlayer onDataUpdate={handleDataUpdate} onPlayersUpdate={handlePlayersUpdate} />
-  
+          <SearchPlayer
+            onDataUpdate={handleDataUpdate}
+            onPlayersUpdate={handlePlayersUpdate}
+          />
         </div>
 
         {players.map((player: any) => (
@@ -56,8 +58,22 @@ export default function HomePage() {
           </div>
         ))}
       </div>
+     
+      {!data && (
+        <div className="bg-darkGray h-full w-full font-bold flex flex-col gap-20 py-36 text-9xl ">
+          <div className="uppercase text-gray-500 w-full font-outfit flex justify-end italic">no players</div>
+          <div className="uppercase text-white font-outfit flex justify-center italic">no players</div>
+          <div className="uppercase text-gray-500 font-outfit flex justify-start italic">no players</div>
+        </div>
+      )}
+      
       {data && (
-       <ChampionsList data={data} pickRate={pickRate} position={position} player={players[0]}/>
+        <ChampionsList
+          data={data}
+          pickRate={pickRate}
+          position={position}
+          player={players[0]}
+        />
       )}
     </div>
   );
