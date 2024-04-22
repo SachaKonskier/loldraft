@@ -1,13 +1,16 @@
-import PlayerCardComponent from "@/components/playerCard";
-
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-
+// React
 import { useState } from "react";
-
-import { IChampionDisplayedData } from "@/types/champions/champions";
-import { mostPlayedPosition } from "@/utils/utils";
+// Icons
+import PlayerCardComponent from "@/components/playerCard";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+// Components
 import ChampionsList from "@/components/championsContent/championsList";
 import SearchPlayer from "@/components/search/searchPlayer";
+// Utils
+import { mostPlayedPosition } from "@/utils/utils";
+// Types
+import { IChampionDisplayedData } from "@/types/champions/champions";
+
 
 export default function HomePage() {
 
@@ -21,43 +24,7 @@ export default function HomePage() {
   const handlePlayersUpdate = (newPlayers: any) => {
     setPlayers(newPlayers);
   };
-  //  store the input value in the state players
-  // const handleAddPlayerCard = async () => {
-  //   const summonerPuuid = (await getSummoner()) as any;
-  //   if (summonerPuuid?.error && summonerPuuid.error?.includes("error")) {
-  //     setError("We are not able to find this account");
-  //     return;
-  //   }
-  //   if (summonerPuuid?.puuid) {
-  //     setPlayers([
-  //       ...players,
-  //       `${summonerPuuid.gameName}#${summonerPuuid.tagLine}`,
-  //     ]);
-  //     setError(null);
-  //     const matches = (await riotApi.getRawMatchList(
-  //       summonerPuuid?.puuid
-  //     )) as any;
-  //     const filteredMatches = await riotApi.getFilteredMatchList(
-  //       summonerPuuid?.puuid,
-  //       matches
-  //     );
-  //     setData(filteredMatches);
-  //   } else {
-  //     return;
-  //   }
-  // };
-  // function handleKeyPressed(event: any) {
-  //   if (event.key === "Enter") {
-  //     handleAddPlayerCard();
-  //   }
-  // }
-  // async function getSummoner() {
-  //   const summonerName = playerInput.split("#")[0];
-  //   const summonerTag = playerInput.split("#")[1];
-  //   const res = await riotApi.getSummonerPuuid(summonerName, summonerTag);
 
-  //   return res;
-  // }
   const pickRate = (data: IChampionDisplayedData) =>
     ((data.totalGames / data.totalFetchedGames) * 100).toFixed(0);
   // find most played position for all champions
@@ -83,8 +50,8 @@ export default function HomePage() {
   
         </div>
 
-        {players.map((player) => (
-          <div key={player} className="px-8 py-5">
+        {players.map((player: any) => (
+          <div key={player.puuid} className="px-8 py-5">
             <PlayerCardComponent player={player} />
           </div>
         ))}
