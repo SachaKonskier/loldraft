@@ -32,7 +32,13 @@ export default function HomePage() {
       .map((champion: any) => champion.positions)
       .flat();
   const position = mostPlayedPosition(findPosition).position;
-  console.log(position);
+  const emptyResults = () => {
+    return (  <div className="bg-darkGray h-full w-full font-bold flex flex-col gap-20 py-36 text-9xl ">
+    <div className="uppercase text-gray-500 w-full font-outfit flex justify-end italic">no players</div>
+    <div className="uppercase text-white font-outfit flex justify-center italic">no players</div>
+    <div className="uppercase text-gray-500 font-outfit flex justify-start italic">no players</div>
+  </div>)
+  }
   return (
     <div className="flex h-screen w-full">
       <div className="w-auto min-w-[370px] bg-blue-gray h-auto pt-10">
@@ -58,15 +64,9 @@ export default function HomePage() {
           </div>
         ))}
       </div>
-     
       {!data && (
-        <div className="bg-darkGray h-full w-full font-bold flex flex-col gap-20 py-36 text-9xl ">
-          <div className="uppercase text-gray-500 w-full font-outfit flex justify-end italic">no players</div>
-          <div className="uppercase text-white font-outfit flex justify-center italic">no players</div>
-          <div className="uppercase text-gray-500 font-outfit flex justify-start italic">no players</div>
-        </div>
+       emptyResults()
       )}
-      
       {data && (
         <ChampionsList
           data={data}
