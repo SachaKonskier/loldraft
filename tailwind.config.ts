@@ -19,6 +19,7 @@ const config = {
     },
     fontFamily: {
       outfit: ['Outfit', 'sans-serif'],
+      barlow: ['Barlow Condensed', 'sans-serif'],
     },
     extend: {
       colors: {
