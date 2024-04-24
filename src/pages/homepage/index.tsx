@@ -35,13 +35,14 @@ export default function HomePage() {
   const emptyResults = () => {
     return (
       <div className="bg-darkGray uppercase h-auto w-full  font-barlow text-gray-500   italic font-bold text-[200px] leading-none truncate relative">
-        <div className="overflow-hidden text-clip">
+        <div className="opacity-40">no player no player</div>
+        <div className="  -right-[48%] absolute">
+          no player <span className="text-white">no player</span> no player
+        </div>
+        <div className="  opacity-40  absolute top-[45%]">
           no player no player
         </div>
-        <div className="  overflow-hidden text-clip -right-[48%] absolute">
-          no player <span className="text-white">no player</span> no player
-          </div>
-          <div className="uppercase  opacity-80 overflow-hidden text-clip absolute top-[45%]">
+        <div className=" opacity-10 absolute top-[66%] -right-12 bg-gradient-to-b from-gray-500 to-transparent bg-clip-text text-transparent">
           no player no player
         </div>
       </div>
@@ -52,7 +53,7 @@ export default function HomePage() {
       <div className="w-auto min-w-[370px] bg-blue-gray h-auto pt-10">
         <div className="flex items center px-8 py-5">
           <h1 className="uppercase text-white font-outfit text-5xl italic font-extrabold">
-            lol draft
+            smart draft
           </h1>
           {/* <button className="w-[42px] h-[42px] bg-light-green rounded-lg rotate-45 ml-auto">
             <EditOutlinedIcon className="text-white -rotate-45" />
