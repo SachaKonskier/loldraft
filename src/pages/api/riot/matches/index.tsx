@@ -55,9 +55,10 @@ async function handleMatchesByIds(
       const res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
         (response) => response.json()
       );
-      const filteredDataByPuuid = res.info.participants
-        .filter((participant: any) => participant.puuid === puuid)
-        .map((element: any) => ({
+      console.log(res)
+      const filteredDataByPuuid = res?.info?.participants
+        ?.filter((participant: any) => participant?.puuid === puuid)
+        ?.map((element: any) => ({
           championName: element.championName,
           championId: element.championId,
           death: element.deaths,
@@ -77,7 +78,7 @@ async function handleMatchesByIds(
           ),
           gameType: res.info.gameType,
         }))
-        .filter(
+        ?.filter(
           (element: any) =>
             element.partyType !== 'ARAM' && element.partyType !== 'URF'
         );
@@ -119,7 +120,10 @@ function getKillParticipation(participants: any[], puuid: string) {
   );
 }
 function getKda(kills: number, deaths: number, assists: number) {
-  return parseFloat(((kills + assists) / deaths).toFixed(2));
+  if (deaths === 0) {
+    return ((kills + assists) / 1).toFixed(2);
+  }
+  return ((kills + assists) / deaths).toFixed(2);
 }
 
 function mergeData(data: IChampionOutput[]) {
@@ -127,6 +131,7 @@ function mergeData(data: IChampionOutput[]) {
     const champion = acc[curr.championName];
     if (champion) {
       champion.name = curr.championName;
+      champion.id = curr.championId;
       champion.kills += curr.kills;
       champion.deaths += curr.death;
       champion.assists += curr.assists;
@@ -142,6 +147,7 @@ function mergeData(data: IChampionOutput[]) {
     } else {
       acc[curr.championName] = {
         name: curr.championName,
+        id: curr.championId,
         kills: curr.kills,
         deaths: curr.death,
         assists: curr.assists,

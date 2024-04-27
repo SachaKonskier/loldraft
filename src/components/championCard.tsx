@@ -81,16 +81,17 @@ export default function ChampionCard({
           src={champion.championBgImg}
           alt={champion.name}
           layout="fill"
-          objectFit="cover"
+          className="rounded-md object-cover object-center"
         />
       </div>
 
-      <div className=" flex items-center gap-2 relative z-10 font-outfit text-white font-medium w-full ">
+      <div className=" flex items-center gap-2 relative z-10 font-outfit text-white font-medium w-full">
         <Image
           src={champion.championImg}
           alt={champion.name}
           width={30}
           height={30}
+         
           className="rounded-full border-2 border-light-green "
         />
         <h1 className="uppercase font-black text-xl flex-1 line-clamp-1">

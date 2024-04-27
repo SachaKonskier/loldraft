@@ -52,7 +52,7 @@ export default function ChampionsList({
               className={`${
                 parseFloat(pickRate(data[champion])) > 33 ? "col-span-2" : ""
               }`}
-              key={data[champion].championId}
+              key={data[champion].id}
             >
               <ChampionCard champion={data[champion]} />
             </div>
