@@ -11,7 +11,7 @@ import PlayerCardComponent from "@/components/playerCard";
 import { getMostPlayedPosition } from "@/utils/utils";
 // Store
 import { usePlayersStore } from "@/providers/players-store-provider";
-import { get } from "http";
+
 
 export default function HomePage() {
   const { accounts } = usePlayersStore((state) => state);
