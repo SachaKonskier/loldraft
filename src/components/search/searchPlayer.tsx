@@ -3,30 +3,43 @@ import { useEffect, useState } from "react";
 // Api Services
 import { RiotApi } from "@/modules/riot/riot.api";
 // Icons
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 // Types
 import { IPlayer } from "@/types/player";
 import { getSummoner } from "@/utils/utils";
+import { usePlayersStore } from "@/providers/players-store-provider";
 const TITLE = "Add a new player !";
 const riotApi = RiotApi;
-interface IProps {
-  onDataUpdate: any;
-  onPlayersUpdate: any;
-}
+
 interface Iplayer {
   summonerName: string;
   summonerAndTag: string;
 }
-export default function SearchPlayer({
-  onDataUpdate,
-  onPlayersUpdate,
-}: IProps) {
+export default function SearchPlayer() {
   const [playerInput, setPlayerInput] = useState("");
-  const [players, setPlayers] = useState<IPlayer[]>([]);
   const [error, setError] = useState<any>();
-  const [data, setData] = useState<any>();
-  const handleAddPlayerCard = async () => {
+  const { addPlayer } = usePlayersStore((state) => state);
+  function checkInputFormat(input: string) {
+    // if the the input is more that 22 char it's not a valid input
 
+    // if the input has more than one # it's not a valid input
+    if (input.split("#").length > 2) {
+      setError("Invalid format input: too many #");
+      return false;
+    }
+    // if the input before the split is more that 16 char it's not a valid input
+    if (input.split("#")[0].length > 16) {
+      setError("Invalid format input: too long before # (max 16)");
+      return false;
+    }
+    // if the input after the split is more that 6 char it's not a valid input
+    if (input.split("#")[0].length <= 16 && input.split("#")[1].length > 5) {
+      setError("Invalid format input: too long after # (max 5)");
+      return false;
+    }
+    return true;
+  }
+  const handleAddPlayerCard = async () => {
     if (!checkInputFormat(playerInput)) {
       return;
     }
@@ -35,49 +48,28 @@ export default function SearchPlayer({
       setError("We are not able to find this account");
       return;
     }
-    function checkInputFormat(input: string) {
-      // if the the input is more that 22 char it's not a valid input
-  
-      // if the input has more than one # it's not a valid input
-      if (input.split("#").length > 2) {
-        setError("Invalid format input: too many #");
-        return false;
-      }
-      // if the input before the split is more that 16 char it's not a valid input
-      if (input.split("#")[0].length > 16) {
-        setError("Invalid format input: too long before # (max 16)");
-        return false;
-      }
-      // if the input after the split is more that 6 char it's not a valid input
-      if (input.split("#")[0].length <=16 && input.split("#")[1].length > 5) {
-        setError("Invalid format input: too long after # (max 5)");
-        return false;
-      }
-      return true;
-    }
+
     if (summonerPuuid?.puuid) {
-      setPlayers([
-        ...players,
-      summonerPuuid
-      ]);
+      // setPlayers([...players, summonerPuuid]);
+      addPlayer(summonerPuuid);
       setError(null);
-      const matches = (await riotApi.getRawMatchList(
-        summonerPuuid?.puuid
-      )) as any;
-      const filteredMatches = await riotApi.getFilteredMatchList(
-        summonerPuuid?.puuid,
-        matches
-      );
-      setData(filteredMatches);
+      // const matches = (await riotApi.getRawMatchList(
+      //   summonerPuuid?.puuid
+      // )) as any;
+      // const filteredMatches = await riotApi.getFilteredMatchList(
+      //   summonerPuuid?.puuid,
+      //   matches
+      // );
+      // setData(filteredMatches);
     } else {
       return;
     }
   };
-  useEffect(() => {
-    onPlayersUpdate(players);
-    onDataUpdate(data);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [players, data]);
+  // useEffect(() => {
+  //   onPlayersUpdate(players);
+  //   onDataUpdate(data);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [players, data]);
   function handleKeyPressed(event: any) {
     if (event.key === "Enter") {
       handleAddPlayerCard();
@@ -123,3 +115,4 @@ export default function SearchPlayer({
     </div>
   );
 }
+

@@ -1,6 +1,6 @@
 // React & Next
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 // Icons & Svg
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import AddIcon from "@mui/icons-material/Add";
@@ -9,34 +9,38 @@ import svgTop from "../../public/top.svg";
 import { IPlayer } from "@/types/player";
 // Utils
 import { getSummoner } from "@/utils/utils";
+// Store
+import { usePlayersStore } from "@/providers/players-store-provider";
+import { IPlayerAccountsAndMatches } from "@/stores/players-store";
 
-export default function PlayerCardComponent({ player }: { player: IPlayer }) {
+export default function PlayerCardComponent({
+  player,
+}: {
+  player: IPlayerAccountsAndMatches;
+}) {
   const [playerInput, setPlayerInput] = useState("");
-  const [subAccounts, setSubAccounts] = useState<any>([]);
+  // const [subAccounts, setSubAccounts] = useState<any>([]);
   const [openModal, setOpenModal] = useState(false);
   const [error, setError] = useState<any>();
-  useEffect(() => {
-      if (subAccounts.find((item:any) => item.puuid === player.puuid)){
-        return
-      }
-      setSubAccounts([...subAccounts, player]);
-     
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { addPlayer, addSubAccount, removePlayer, removeSubAccount } =
+    usePlayersStore((state) => state);
+
+  console.log(player);
   const handleSubAccountOnClick = async () => {
     const summoner = (await getSummoner(playerInput)) as any;
     if (summoner?.error && summoner.error?.includes("error")) {
       setError("We are not able to find this account");
       return;
     }
-    if (subAccounts.find((item:any) => item.puuid === summoner.puuid)) {
-      console.log('already added')
-      setError('This account is already added')
+    if (
+      player.mainAccount.puuid === summoner.puuid ||
+      player.subAccounts.some((acc) => acc.puuid === summoner.puuid)
+    ) {
+      setError("This account is already added");
       return;
     }
     if (summoner?.puuid) {
-      setSubAccounts([...subAccounts, summoner]);
+      addSubAccount(summoner);
       setError(null);
     }
     setPlayerInput("");
@@ -47,8 +51,9 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
     }
   }
 
-  const deleteAccountOnClick = (account: string) => {
-    setSubAccounts(subAccounts.filter((item: any) => item !== account));
+  const deleteAccountOnClick = (type: string, account: IPlayer) => {
+    type === "main" ? removePlayer(account) : removeSubAccount(account);
+    removePlayer(account);
   };
   function handleEditModal() {
     setOpenModal(!openModal);
@@ -67,7 +72,7 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
           />
         </p>
         <span className="pl-4 font-normal border border-white  h-auto w-full py-1 rounded-md">
-          {player.gameName}
+          {player.mainAccount.gameName}
         </span>
         <span className="ml-auto hover:animate-pulse hover:scale-110">
           <button onClick={handleEditModal}>
@@ -75,7 +80,7 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
           </button>
         </span>
       </div>
-      {subAccounts.length < 3 && (
+      {player.subAccounts.length < 2 && (
         <div className="relative gap-2  h-auto flex items-center rounded-lg">
           <div className="relative w-full pb-2">
             <input
@@ -105,20 +110,42 @@ export default function PlayerCardComponent({ player }: { player: IPlayer }) {
           </div>
         </div>
       )}
-       {error && (
+      {error && (
         <div className="text-red-500 py-2 italic text-sm font-outfit">
           {error}
         </div>
       )}
-      {subAccounts.map((account: any) => (
-        <div key={account.puuid} className="flex items-center w-full gap-2 pt-2">
+      {player?.mainAccount && (
+        <div className="flex items-center w-full gap-2 pt-2">
+          {openModal && (
+            <button
+              className="ml-auto  hover:animate-pulse hover:scale-110 disabled:opacity-50"
+              onClick={() => {
+                deleteAccountOnClick("main", player.mainAccount);
+                addPlayer(player.subAccounts[0]);
+              }}
+              disabled={player.subAccounts.length === 0}
+            >
+              <CloseIcon className="text-white hover:text-red-500 disabled:" />
+            </button>
+          )}
+          <p className="text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2">
+            {`${player.mainAccount.gameName}#${player.mainAccount.tagLine}`}
+          </p>
+        </div>
+      )}
+      {player?.subAccounts?.map((account: any) => (
+        <div
+          key={account.puuid}
+          className="flex items-center w-full gap-2 pt-2"
+        >
           {openModal && (
             <button
               className="ml-auto enabled:hover:animate-pulse enabled:hover:scale-110 disabled:opacity-50"
-              onClick={() => deleteAccountOnClick(account)}
-              disabled={subAccounts.length === 1}
+              onClick={() => deleteAccountOnClick("sub", account)}
+              //disabled={player.subAccounts.length === 2}
             >
-              <CloseIcon className="text-white enabled:hover:text-red-500 disabled:" />
+              <CloseIcon className="text-white hover:text-red-500 disabled:" />
             </button>
           )}
           <p

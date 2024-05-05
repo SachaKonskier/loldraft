@@ -2,7 +2,6 @@
 import { useState } from "react";
 // Icons
 import PlayerCardComponent from "@/components/playerCard";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 // Components
 import ChampionsList from "@/components/championsContent/championsList";
 import SearchPlayer from "@/components/search/searchPlayer";
@@ -10,19 +9,16 @@ import SearchPlayer from "@/components/search/searchPlayer";
 import { mostPlayedPosition } from "@/utils/utils";
 // Types
 import { IChampionDisplayedData } from "@/types/champions/champions";
+import { usePlayersStore } from "@/providers/players-store-provider";
 
 export default function HomePage() {
-  const [players, setPlayers] = useState<string[]>([]);
-
   const [data, setData] = useState<any>();
+  const { players } = usePlayersStore((state) => state);
   const handleDataUpdate = (newData: any) => {
     setData(newData);
   };
 
-  const handlePlayersUpdate = (newPlayers: any) => {
-    setPlayers(newPlayers);
-  };
-
+  console.log(players);
   const pickRate = (data: IChampionDisplayedData) =>
     ((data.totalGames / data.totalFetchedGames) * 100).toFixed(0);
   // find most played position for all champions
@@ -61,14 +57,11 @@ export default function HomePage() {
         </div>
         <div className="px-8 py-5">
           {/* input field */}
-          <SearchPlayer
-            onDataUpdate={handleDataUpdate}
-            onPlayersUpdate={handlePlayersUpdate}
-          />
+          <SearchPlayer />
         </div>
 
-        {players.map((player: any) => (
-          <div key={player.puuid} className="px-8 py-5">
+        {players?.map((player: any) => (
+          <div key={player.mainAccount.puuid} className="px-8 py-5">
             <PlayerCardComponent player={player} />
           </div>
         ))}
