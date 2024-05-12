@@ -1,11 +1,11 @@
 import Image from "next/image";
-import { IChampionDisplayedData } from "@/types/champions/champions";
+import { IRefinedChampionDisplayedData } from "@/types/matches/matches";
 import CircleProgressBar from "./circleProgressBar";
 
 export default function ChampionCard({
   champion,
 }: {
-  champion: IChampionDisplayedData;
+  champion: IRefinedChampionDisplayedData;
 }) {
   function getKdaThreshold(kda: string) {
     switch (true) {

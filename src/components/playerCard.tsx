@@ -6,26 +6,37 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import svgTop from "../../public/top.svg";
+// Types
 import { IPlayer } from "@/types/player";
 // Utils
 import { getSummoner } from "@/utils/utils";
 // Store
 import { usePlayersStore } from "@/providers/players-store-provider";
 import { IPlayerAccountsAndMatches } from "@/stores/players-store";
-
+// Api Services
+import { RiotApi } from "@/modules/riot/riot.api";
+const riotApi = RiotApi;
 export default function PlayerCardComponent({
   player,
 }: {
   player: IPlayerAccountsAndMatches;
 }) {
   const [playerInput, setPlayerInput] = useState("");
-  // const [subAccounts, setSubAccounts] = useState<any>([]);
   const [openModal, setOpenModal] = useState(false);
   const [error, setError] = useState<any>();
-  const { addPlayer, addSubAccount, removePlayer, removeSubAccount } =
+  const { addPlayer, addSubAccount, removePlayer, removeSubAccount, addMatch } =
     usePlayersStore((state) => state);
-
-  console.log(player);
+  
+  async function getMatchesData() {
+    const matches = await riotApi.getRawMatchList(player.mainAccount.puuid) as any;
+    const filteredMatches = await riotApi.getFilteredMatchList(player.mainAccount.puuid, matches);
+    console.log("filteredMatches", filteredMatches);
+    addMatch(player?.mainAccount?.puuid, filteredMatches);
+  }
+  if (player?.mainAccount?.puuid && player.matches.length === 0) {
+    console.log('player.mainAccount is', player.mainAccount);
+    getMatchesData();
+  }
   const handleSubAccountOnClick = async () => {
     const summoner = (await getSummoner(playerInput)) as any;
     if (summoner?.error && summoner.error?.includes("error")) {

@@ -1,4 +1,4 @@
-import { IChampionOutput } from "@/types/champions/champions";
+import { IRefinedChampionOutput } from "@/types/matches/matches";
 import { NextApiRequest, NextApiResponse } from "next";
 const riotUrl = "https://europe.api.riotgames.com/lol/match/v5/matches";
 const apiKey = process.env.RIOT_API_KEY;
@@ -11,7 +11,7 @@ export default async function handler(
     query: { puuid, matches, summonerPuuid },
   } = req;
   const id = puuid;
-  if (req.method === 'GET') {
+  if (req.method === "GET") {
     if (puuid) {
       // Handle request for fetching matches by PUUID
       await handleMatchesByPuuid(id as string, res);
@@ -19,26 +19,29 @@ export default async function handler(
       // Handle request for fetching matches by match IDs
       await handleMatchesByIds(matches as any, summonerPuuid as string, res);
     } else {
-      res.status(400).json({ message: 'Missing parameters' });
+      res.status(400).json({ message: "Missing parameters" });
     }
   } else {
-    res.status(405).json({ message: 'Method Not Allowed' });
+    res.status(405).json({ message: "Method Not Allowed" });
   }
 }
 
 async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   try {
-    const result = await fetch(
-      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=20&api_key=${apiKey}`, {method: "GET",
-      redirect: "follow",
-      headers: {
-        "Content-Type": "application/json",
-      },}
+    const result: string[] = await fetch(
+      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=4&api_key=${apiKey}`,
+      {
+        method: "GET",
+        redirect: "follow",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     ).then((response) => response.json());
     res.status(200).json(result);
   } catch (error) {
-    console.error('Error fetching matches:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error fetching matches:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }
 
@@ -47,10 +50,10 @@ async function handleMatchesByIds(
   puuid: string,
   res: NextApiResponse
 ) {
-  const stringToMatchesArray = matches.split(',');
+  const stringToMatchesArray = matches.split(",");
 
   try {
-    const results: IChampionOutput[] = [];
+    const results: IRefinedChampionOutput[] = [];
     for (let match of stringToMatchesArray) {
       const res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
         (response) => response.json()
@@ -77,10 +80,11 @@ async function handleMatchesByIds(
             (element.totalMinionsKilled / (element.timePlayed / 60)).toFixed(2)
           ),
           gameType: res.info.gameType,
+          visionScore: element.visionScore,
         }))
         ?.filter(
           (element: any) =>
-            element.partyType !== 'ARAM' && element.partyType !== 'URF'
+            element.partyType !== "ARAM" && element.partyType !== "URF"
         );
       results.push(...filteredDataByPuuid);
     }
@@ -98,8 +102,8 @@ async function handleMatchesByIds(
 
     res.send(sortedChampionsData);
   } catch (error) {
-    console.error('Error fetching matches:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error fetching matches:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }
 
@@ -116,7 +120,7 @@ function getKillParticipation(participants: any[], puuid: string) {
   );
   if (player.kills === 0 && player.assists === 0 && teamKills === 0) return 0;
   return parseFloat(
-    (((player.kills  + player.assists) / teamKills) * 100).toFixed(2)
+    (((player.kills + player.assists) / teamKills) * 100).toFixed(2)
   );
 }
 function getKda(kills: number, deaths: number, assists: number) {
@@ -126,7 +130,7 @@ function getKda(kills: number, deaths: number, assists: number) {
   return ((kills + assists) / deaths).toFixed(2);
 }
 
-function mergeData(data: IChampionOutput[]) {
+function mergeData(data: IRefinedChampionOutput[]) {
   const result = data.reduce((acc: any, curr: any) => {
     const champion = acc[curr.championName];
     if (champion) {
@@ -144,6 +148,7 @@ function mergeData(data: IChampionOutput[]) {
       champion.wins += curr.win ? 1 : 0;
       champion.losses += curr.win ? 0 : 1;
       champion.positions.push(curr.position);
+      champion.visionScore += curr.visionScore;
     } else {
       acc[curr.championName] = {
         name: curr.championName,
@@ -160,6 +165,7 @@ function mergeData(data: IChampionOutput[]) {
         wins: curr.win ? 1 : 0,
         losses: curr.win ? 0 : 1,
         positions: [curr.position],
+        visionScore: curr.visionScore,
       };
     }
     return acc;
@@ -176,6 +182,7 @@ function mergeData(data: IChampionOutput[]) {
     stats.championImg = `/assets/champion/${stats.name}.png`;
     stats.championBgImg = `/assets/background/${stats.name}.jpg`;
     stats.totalFetchedGames = data.length;
+    stats.visionScore = (stats.visionScore / stats.totalGames).toFixed(2);
   }
 
   return result;

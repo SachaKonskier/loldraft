@@ -1,4 +1,4 @@
-export interface IRefinedChampionOutput {
+export interface IRawChampionResultPerMatch {
     championName: string;
     championId: number;
     death: number;
@@ -11,15 +11,17 @@ export interface IRefinedChampionOutput {
     timePlayed: number;
     partyType: string;
     gameType: string;
+    visionScore: number;
 }
 
-export interface IChampionOutput extends IRefinedChampionOutput {
+export interface IRefinedChampionOutput extends IRawChampionResultPerMatch {
     kda : number;
     killParticipation: number;
     csPerMin: number;
+    
 }
 
-export interface IChampionDisplayedData {
+export interface IRefinedChampionDisplayedData {
     assists: number;
     championBgImg: string;
     championImg: string;
@@ -37,4 +39,9 @@ export interface IChampionDisplayedData {
     wins: number;
     timePlayed: number;
     totalFetchedGames: number;
+}
+
+export interface IMatch {
+    summonerPuuid: string;
+    matches : IRefinedChampionDisplayedData[];
 }

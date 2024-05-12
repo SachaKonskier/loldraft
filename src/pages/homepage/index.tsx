@@ -8,7 +8,7 @@ import SearchPlayer from "@/components/search/searchPlayer";
 // Utils
 import { mostPlayedPosition } from "@/utils/utils";
 // Types
-import { IChampionDisplayedData } from "@/types/champions/champions";
+import { IRefinedChampionDisplayedData } from "@/types/matches/matches";
 import { usePlayersStore } from "@/providers/players-store-provider";
 
 export default function HomePage() {
@@ -17,14 +17,15 @@ export default function HomePage() {
   const handleDataUpdate = (newData: any) => {
     setData(newData);
   };
+  
 
   console.log(players);
-  const pickRate = (data: IChampionDisplayedData) =>
+  const pickRate = (data: IRefinedChampionDisplayedData) =>
     ((data.totalGames / data.totalFetchedGames) * 100).toFixed(0);
   // find most played position for all champions
   const findPosition =
-    data &&
-    Object.values(data)
+    players[0]?.matches &&
+    players[0]?.matches
       .map((champion: any) => champion.positions)
       .flat();
   const position = mostPlayedPosition(findPosition).position;
@@ -66,15 +67,19 @@ export default function HomePage() {
           </div>
         ))}
       </div>
-      {!data && emptyResults()}
-      {data && (
-        <ChampionsList
-          data={data}
+      {!players && emptyResults()}
+     
+      {players?.map((player: any) => (
+        <div key={player.mainAccount.puuid} className="w-full">
+          <ChampionsList
+          data={player.matches[1]}
           pickRate={pickRate}
           position={position}
-          player={players[0]}
+          player={player}
         />
-      )}
+        </div>
+          ))}
     </div>
+  
   );
 }

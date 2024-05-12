@@ -1,10 +1,11 @@
+import { IMatch } from "@/types/matches/matches";
 import { IPlayer } from "@/types/player";
 import { createStore } from "zustand/vanilla";
 // state
 export interface IPlayerAccountsAndMatches {
   mainAccount: IPlayer;
   subAccounts: IPlayer[];
-  matches: any[];
+  matches: IMatch[];
 }
 export interface IPlayerState {
   players: IPlayerAccountsAndMatches[];
@@ -15,7 +16,8 @@ export type IPlayerActions = {
   removePlayer: (player: IPlayer) => void;
   addSubAccount: (player: IPlayer) => void;
   removeSubAccount: (player: IPlayer) => void;
-  addMatch: (match: any) => void;
+  addMatch: (playerPuuid: string, match: any) => void;
+  removeMatch: (player: IPlayer) => void;
 };
 export const defaultInitialState: IPlayerState = {
   players: [],
@@ -45,39 +47,41 @@ export const createPlayerStore = (
     addSubAccount: (player: IPlayer) => {
       set((state) => ({
         players: state.players.map((p) => {
-            return {
-              ...p,
-              subAccounts: [...p.subAccounts, player],
-            };
-         
+          return {
+            ...p,
+            subAccounts: [...p.subAccounts, player],
+          };
         }),
       }));
     },
     removeSubAccount: (player: IPlayer) => {
       set((state) => ({
         players: state.players.map((p) => {
-         
-            return {
-              ...p,
-              subAccounts: p.subAccounts.filter(
-                (s) => s.puuid !== player.puuid
-              ),
-            
-          }
-          return p;
+          return {
+            ...p,
+            subAccounts: p.subAccounts.filter((s) => s.puuid !== player.puuid),
+          };
         }),
       }));
     },
-    addMatch: (match: any) => {
+    addMatch: (player: any, match: any) => {
       set((state) => ({
         players: state.players.map((p) => {
-          if (p.mainAccount.puuid === match.metadata.participants[0].puuid) {
-            return {
-              ...p,
-              matches: [...p.matches, match],
-            };
-          }
-          return p;
+          return {
+            ...p,
+            matches: [{summonerPuuid: player},match],
+          };
+        }),
+      }));
+    },
+   // remove a match based on the player.puuid
+    removeMatch: (player: IPlayer) => {
+      set((state) => ({
+        players: state.players.map((p) => {
+          return {
+            ...p,
+            matches: p.matches.filter((m) => m.summonerPuuid !== player.puuid),
+          };
         }),
       }));
     },
