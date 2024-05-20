@@ -31,7 +31,7 @@ export default async function handler(
 async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   try {
     const result: string[] = await fetch(
-      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=4&api_key=${apiKey}`,
+      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=6&api_key=${apiKey}`,
       {
         method: "GET",
         redirect: "follow",
@@ -142,11 +142,12 @@ function getKda(kills: number, deaths: number, assists: number) {
   }
   return ((kills + assists) / deaths).toFixed(2);
 }
-
+// TODO Why is the KDA NAN Sometimes ?
 function mergeData(data: IRefinedChampionOutput[]) {
   const result = data.reduce((acc: any, curr: any) => {
     const champion = acc[curr.championName];
     if (champion) {
+      champion.summonerPuuid = curr.summonerPuuid;
       champion.name = curr.championName;
       champion.id = curr.championId;
       champion.kills += curr.kills;
@@ -164,6 +165,7 @@ function mergeData(data: IRefinedChampionOutput[]) {
       champion.visionScore += curr.visionScore;
     } else {
       acc[curr.championName] = {
+        summonerPuuid: curr.summonerPuuid,
         name: curr.championName,
         id: curr.championId,
         kills: curr.kills,

@@ -46,7 +46,7 @@ export default function SearchPlayer() {
       });
       return;
     }
-
+   
     if (summonerPuuid?.puuid) {
       addMainAccount(summonerPuuid);
     } else {
@@ -54,7 +54,6 @@ export default function SearchPlayer() {
     }
     resetField("summoner");
   }
-
   return (
     <div className="max-w-[320px] p-3 bg-gradient-to-r from-light-green to-transparent rounded-lg border border-light-green h-full w-full">
       <h1 className="text-base font-bold italic font-outfit text-white pb-3">
@@ -83,4 +82,3 @@ export default function SearchPlayer() {
     </div>
   );
 }
-

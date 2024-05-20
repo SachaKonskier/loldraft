@@ -1,5 +1,4 @@
-// React
-import { useState } from "react";
+
 // Icons
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 
