@@ -2,25 +2,26 @@ import { IMatch } from "@/types/matches/matches";
 import { IPlayer } from "@/types/player";
 import { createStore } from "zustand/vanilla";
 // state
-export interface IPlayerAccountsAndMatches {
+
+export interface ISearchAccounts {
   mainAccount: IPlayer;
   subAccounts: IPlayer[];
   matches: IMatch[];
 }
 export interface IPlayerState {
-  players: IPlayerAccountsAndMatches[];
+  accounts: ISearchAccounts[];
 }
 // actions
 export type IPlayerActions = {
-  addPlayer: (player: IPlayer) => void;
-  removePlayer: (player: IPlayer) => void;
-  addSubAccount: (player: IPlayer) => void;
-  removeSubAccount: (player: IPlayer) => void;
-  addMatch: (playerPuuid: string, match: any) => void;
-  removeMatch: (player: IPlayer) => void;
+  addMainAccount: (mainAccount: IPlayer) => void;
+  removeMainAccount: (account: IPlayer) => void;
+  addSubAccount: (subAccount: IPlayer, mainAccountPuuid: string) => void;
+  removeSubAccount: (account: IPlayer) => void;
+  addMatches: (puuid: string, matches: IMatch[]) => void;
+  updateMatches: (puuid: string, matches: IMatch[]) => void;
 };
 export const defaultInitialState: IPlayerState = {
-  players: [],
+  accounts: [],
 };
 export type PlayerStore = IPlayerState & IPlayerActions;
 
@@ -29,61 +30,67 @@ export const createPlayerStore = (
 ) => {
   return createStore<PlayerStore>()((set) => ({
     ...initialState,
-    addPlayer: (player: IPlayer) => {
+    addMainAccount: (mainAccount: IPlayer) =>
       set((state) => ({
-        players: [
-          ...state.players,
-          { mainAccount: player, subAccounts: [], matches: [] },
+        accounts: [
+          ...state.accounts,
+          {
+            mainAccount,
+            subAccounts: [],
+            matches: [],
+          },
         ],
-      }));
-    },
-    removePlayer: (player: IPlayer) => {
+      })),
+    removeMainAccount: (account: IPlayer) =>
       set((state) => ({
-        players: state.players.filter(
-          (p) => p.mainAccount.puuid !== player.puuid
+        accounts: state.accounts.filter(
+          (acc) => acc.mainAccount.puuid !== account.puuid
         ),
-      }));
-    },
-    addSubAccount: (player: IPlayer) => {
+      })),
+    addSubAccount: (subAccount: IPlayer, mainAccountPuuid: string) =>
       set((state) => ({
-        players: state.players.map((p) => {
-          return {
-            ...p,
-            subAccounts: [...p.subAccounts, player],
-          };
+        accounts: state.accounts.map((acc) => {
+          if (acc.mainAccount.puuid === mainAccountPuuid) {
+            return {
+              ...acc,
+              subAccounts: [...acc.subAccounts, subAccount],
+            };
+          }
+          return acc;
         }),
-      }));
-    },
-    removeSubAccount: (player: IPlayer) => {
+      })),
+    removeSubAccount: (account: IPlayer) =>
       set((state) => ({
-        players: state.players.map((p) => {
-          return {
-            ...p,
-            subAccounts: p.subAccounts.filter((s) => s.puuid !== player.puuid),
-          };
-        }),
-      }));
-    },
-    addMatch: (player: any, match: any) => {
+        accounts: state.accounts.map((acc) => ({
+          ...acc,
+          subAccounts: acc.subAccounts.filter(
+            (subAcc) => subAcc.puuid !== account.puuid
+          ),
+        })),
+      })),
+    addMatches: (puuid: string, matches: IMatch[]) =>
       set((state) => ({
-        players: state.players.map((p) => {
-          return {
-            ...p,
-            matches: [{summonerPuuid: player},match],
-          };
+        accounts: state.accounts.map((acc) => {
+          if (acc.mainAccount.puuid === puuid) {
+            return {
+              ...acc,
+              matches,
+            };
+          }
+          return acc;
         }),
-      }));
-    },
-   // remove a match based on the player.puuid
-    removeMatch: (player: IPlayer) => {
+      })),
+    updateMatches: (puuid: string, matches: IMatch[]) =>
       set((state) => ({
-        players: state.players.map((p) => {
-          return {
-            ...p,
-            matches: p.matches.filter((m) => m.summonerPuuid !== player.puuid),
-          };
+        accounts: state.accounts.map((acc) => {
+          if (acc.mainAccount.puuid === puuid) {
+            return {
+              ...acc,
+              matches: [...acc.matches, ...matches],
+            };
+          }
+          return acc;
         }),
-      }));
-    },
+      })),
   }));
 };

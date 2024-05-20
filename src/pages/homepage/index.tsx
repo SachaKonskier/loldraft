@@ -1,34 +1,20 @@
-// React
-import { useState } from "react";
+
 // Icons
 import PlayerCardComponent from "@/components/playerCard";
 // Components
 import ChampionsList from "@/components/championsContent/championsList";
 import SearchPlayer from "@/components/search/searchPlayer";
 // Utils
-import { mostPlayedPosition } from "@/utils/utils";
-// Types
-import { IRefinedChampionDisplayedData } from "@/types/matches/matches";
+import { getMostPlayedPosition } from "@/utils/utils";
+// Store
 import { usePlayersStore } from "@/providers/players-store-provider";
 
 export default function HomePage() {
-  const [data, setData] = useState<any>();
-  const { players } = usePlayersStore((state) => state);
-  const handleDataUpdate = (newData: any) => {
-    setData(newData);
-  };
-  
-
-  console.log(players);
-  const pickRate = (data: IRefinedChampionDisplayedData) =>
-    ((data.totalGames / data.totalFetchedGames) * 100).toFixed(0);
-  // find most played position for all champions
-  const findPosition =
-    players[0]?.matches &&
-    players[0]?.matches
-      .map((champion: any) => champion.positions)
-      .flat();
-  const position = mostPlayedPosition(findPosition).position;
+ 
+  const { accounts } = usePlayersStore((state) => state);
+// TODO - get the most played position from the selected account / default is accounts[0]
+ const selectedAccount = accounts[0]
+  const position = getMostPlayedPosition(selectedAccount?.matches);
   const emptyResults = () => {
     return (
       <div className="bg-darkGray uppercase h-auto w-full  font-barlow text-gray-500   italic font-bold text-[200px] leading-none truncate relative">
@@ -46,7 +32,7 @@ export default function HomePage() {
     );
   };
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex min-h-screen h-fit w-full">
       <div className="w-auto min-w-[370px] bg-blue-gray h-auto pt-10">
         <div className="flex items center px-8 py-5">
           <h1 className="uppercase text-white font-outfit text-5xl italic font-extrabold">
@@ -61,19 +47,19 @@ export default function HomePage() {
           <SearchPlayer />
         </div>
 
-        {players?.map((player: any) => (
+        {accounts?.map((player: any) => (
           <div key={player.mainAccount.puuid} className="px-8 py-5">
             <PlayerCardComponent player={player} />
           </div>
         ))}
       </div>
-      {!players && emptyResults()}
+      {accounts.length === 0 && emptyResults()}
      
-      {players?.map((player: any) => (
+      {accounts?.map((player: any) => (
+        
         <div key={player.mainAccount.puuid} className="w-full">
           <ChampionsList
-          data={player.matches[1]}
-          pickRate={pickRate}
+          data={player.matches}
           position={position}
           player={player}
         />

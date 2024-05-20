@@ -12,31 +12,58 @@ import { IPlayer } from "@/types/player";
 import { getSummoner } from "@/utils/utils";
 // Store
 import { usePlayersStore } from "@/providers/players-store-provider";
-import { IPlayerAccountsAndMatches } from "@/stores/players-store";
+import {  ISearchAccounts } from "@/stores/players-store";
 // Api Services
 import { RiotApi } from "@/modules/riot/riot.api";
+import { IMatch } from "@/types/matches/matches";
 const riotApi = RiotApi;
 export default function PlayerCardComponent({
   player,
 }: {
-  player: IPlayerAccountsAndMatches;
+  player: ISearchAccounts;
 }) {
   const [playerInput, setPlayerInput] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [isFetch, setIsFetch] = useState(false)
   const [error, setError] = useState<any>();
-  const { addPlayer, addSubAccount, removePlayer, removeSubAccount, addMatch } =
+  const {  accounts, addMainAccount, addSubAccount, removeMainAccount, removeSubAccount, addMatches, updateMatches } =
     usePlayersStore((state) => state);
-  
-  async function getMatchesData() {
-    const matches = await riotApi.getRawMatchList(player.mainAccount.puuid) as any;
-    const filteredMatches = await riotApi.getFilteredMatchList(player.mainAccount.puuid, matches);
-    console.log("filteredMatches", filteredMatches);
-    addMatch(player?.mainAccount?.puuid, filteredMatches);
+    function checkIfSummonerPuuidExists(summonerPuuid: string, data:any) {
+      return data.hasOwnProperty(summonerPuuid);
   }
-  if (player?.mainAccount?.puuid && player.matches.length === 0) {
-    console.log('player.mainAccount is', player.mainAccount);
-    getMatchesData();
+  console.log('TEST TEST', accounts?.map((acc) => acc?.subAccounts[0]?.puuid))
+  async function getMatchesData(accountType: string) {
+    if (accountType === "main") {
+      const matches = await riotApi.getRawMatchList(player.mainAccount.puuid) as any;
+      const filteredMatches = await riotApi.getFilteredMatchList(player.mainAccount.puuid, matches) as IMatch[];
+      addMatches(player?.mainAccount?.puuid, filteredMatches);
+      
+    }
+    
+    if (accountType === "sub") {
+      console.log('in getMatchesData for sub', player)
+      const matches = await riotApi.getRawMatchList(player?.subAccounts[0]?.puuid) as any;
+      console.log(' getMatchesData matches', matches)
+      const filteredMatches = await riotApi.getFilteredMatchList(player?.subAccounts[0]?.puuid, matches) as IMatch[];
+      setIsFetch(true)
+      console.log('filteredMatches', filteredMatches.length)
+      updateMatches(player?.mainAccount?.puuid, filteredMatches);
+      console.log('updatedPlayer?', player)
+      
+    }
   }
+  if (player?.mainAccount?.puuid && player?.matches?.length === 0) {
+    console.log('matches for main account added')
+    getMatchesData("main");
+  }
+  console.log('player', player)
+  if (player?.subAccounts?.length > 0 && player?.subAccounts[0]?.puuid  && !isFetch
+    // && checkIfSummonerPuuidExists(player?.subAccounts[0]?.puuid, player?.matches)
+  ){
+    console.log('matches for subaccounts added')
+    getMatchesData("sub");
+  }
+
   const handleSubAccountOnClick = async () => {
     const summoner = (await getSummoner(playerInput)) as any;
     if (summoner?.error && summoner.error?.includes("error")) {
@@ -51,7 +78,7 @@ export default function PlayerCardComponent({
       return;
     }
     if (summoner?.puuid) {
-      addSubAccount(summoner);
+      addSubAccount(summoner, player?.mainAccount?.puuid);
       setError(null);
     }
     setPlayerInput("");
@@ -63,8 +90,8 @@ export default function PlayerCardComponent({
   }
 
   const deleteAccountOnClick = (type: string, account: IPlayer) => {
-    type === "main" ? removePlayer(account) : removeSubAccount(account);
-    removePlayer(account);
+    type === "main" ? removeMainAccount(account) : removeSubAccount(account);
+    removeMainAccount(account);
   };
   function handleEditModal() {
     setOpenModal(!openModal);
@@ -91,7 +118,7 @@ export default function PlayerCardComponent({
           </button>
         </span>
       </div>
-      {player.subAccounts.length < 2 && (
+      {player?.subAccounts?.length < 2 && (
         <div className="relative gap-2  h-auto flex items-center rounded-lg">
           <div className="relative w-full pb-2">
             <input
@@ -133,7 +160,7 @@ export default function PlayerCardComponent({
               className="ml-auto  hover:animate-pulse hover:scale-110 disabled:opacity-50"
               onClick={() => {
                 deleteAccountOnClick("main", player.mainAccount);
-                addPlayer(player.subAccounts[0]);
+                addMainAccount(player.subAccounts[0]);
               }}
               disabled={player.subAccounts.length === 0}
             >

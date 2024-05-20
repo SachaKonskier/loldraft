@@ -17,3 +17,11 @@ export async function getSummoner(input:string) {
     const result = await riotApi.getSummonerPuuid(summonerName, summonerTag);
     return result;
 }
+
+export function getMostPlayedPosition(data: any) {
+    let positions = [];
+    for (const champion in data) {
+      positions.push(data[champion].positions[0]);
+    }
+    return positions?.sort((a, b) => positions?.filter((v) => v === a)?.length - positions?.filter((v) => v === b)?.length).pop();
+  }

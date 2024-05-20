@@ -1,25 +1,33 @@
 import Image from "next/image";
 import { IRefinedChampionDisplayedData } from "@/types/matches/matches";
 import CircleProgressBar from "./circleProgressBar";
+import { parse } from "path";
 
 export default function ChampionCard({
   champion,
 }: {
   champion: IRefinedChampionDisplayedData;
 }) {
+
   function getKdaThreshold(kda: string) {
     switch (true) {
       case parseFloat(kda) <= 1.5:
         return "text-veryLow";
       case parseFloat(kda) <= 2.5:
         return "text-medium";
-      case parseFloat(kda) <= 3.5:
+      case parseFloat(kda) <= 4.5:
         return "text-high";
-      case parseFloat(kda) >= 4.5:
+      case parseFloat(kda) > 4.5:
         return "text-veryHigh";
       default:
         return "";
     }
+  }
+  const getKda = (kills: number, deaths: number, assists: number) => {
+    if (deaths === 0) {
+      return ((kills + assists) / 1).toFixed(2);
+    }
+    return ((kills + assists) / deaths).toFixed(2);
   }
   function getKPThreshold(kp: string) {
     switch (true) {
@@ -36,14 +44,15 @@ export default function ChampionCard({
     }
   }
   function csPerMinuteThreshold(csPerMinute: string) {
+
     switch (true) {
       case parseFloat(csPerMinute) < 3:
         return "text-veryLow";
       case parseFloat(csPerMinute) < 6:
         return "text-low";
-      case parseFloat(csPerMinute) > 6:
+      case parseFloat(csPerMinute) > 6 && parseFloat(csPerMinute) < 8:
         return "text-high";
-      case parseFloat(csPerMinute) > 8:
+      case parseFloat(csPerMinute) >= 8:
         return "text-veryHigh";
       default:
         return "";
@@ -131,7 +140,7 @@ export default function ChampionCard({
               1
             )}
           </span>
-          <span className={`font-black ${getKdaThreshold(champion.kda)}`}>
+          <span className={`font-black ${getKdaThreshold(getKda(champion.kills, champion.deaths, champion.assists))}`}>
             {kda}
           </span>
         </div>

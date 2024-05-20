@@ -8,6 +8,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { IPlayer } from "@/types/player";
 import { getSummoner } from "@/utils/utils";
 import { usePlayersStore } from "@/providers/players-store-provider";
+import { ISearchAccounts } from "@/stores/players-store";
 const TITLE = "Add a new player !";
 const riotApi = RiotApi;
 
@@ -18,10 +19,18 @@ interface Iplayer {
 export default function SearchPlayer() {
   const [playerInput, setPlayerInput] = useState("");
   const [error, setError] = useState<any>();
-  const { addPlayer } = usePlayersStore((state) => state);
+  const { addMainAccount, accounts } = usePlayersStore((state) => state);
   function checkInputFormat(input: string) {
     // if the the input is more that 22 char it's not a valid input
-
+    if (input.length > 22) {
+      setError("Invalid format input: too long");
+      return false;
+    }
+    // if there is no # in the input it's not a valid input
+    if (!input.includes("#")) {
+      setError("Invalid format input: missing #");
+      return false;
+    }
     // if the input has more than one # it's not a valid input
     if (input.split("#").length > 2) {
       setError("Invalid format input: too many #");
@@ -39,6 +48,19 @@ export default function SearchPlayer() {
     }
     return true;
   }
+  function playerExists(accounts: ISearchAccounts[]) {
+    if (!accounts.some((account) =>
+      account.mainAccount.gameName.includes(playerInput))) {
+        
+        return false
+      } 
+     return true;
+    
+  }
+  if (playerExists(accounts)) {
+    setError("This account is already in the list");
+    return;
+  }
   const handleAddPlayerCard = async () => {
     if (!checkInputFormat(playerInput)) {
       return;
@@ -48,34 +70,19 @@ export default function SearchPlayer() {
       setError("We are not able to find this account");
       return;
     }
-
+   
     if (summonerPuuid?.puuid) {
-      // setPlayers([...players, summonerPuuid]);
-      addPlayer(summonerPuuid);
+      addMainAccount(summonerPuuid);
       setError(null);
-      // const matches = (await riotApi.getRawMatchList(
-      //   summonerPuuid?.puuid
-      // )) as any;
-      // const filteredMatches = await riotApi.getFilteredMatchList(
-      //   summonerPuuid?.puuid,
-      //   matches
-      // );
-      // setData(filteredMatches);
     } else {
       return;
     }
   };
-  // useEffect(() => {
-  //   onPlayersUpdate(players);
-  //   onDataUpdate(data);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [players, data]);
   function handleKeyPressed(event: any) {
     if (event.key === "Enter") {
       handleAddPlayerCard();
     }
   }
-
   return (
     <div className="max-w-[320px] p-3 bg-gradient-to-r from-light-green to-transparent rounded-lg border border-light-green h-full w-full">
       <h1 className="text-base font-bold italic font-outfit text-white pb-3">
@@ -90,6 +97,7 @@ export default function SearchPlayer() {
           placeholder="Game Name + #EX"
           value={playerInput}
           onChange={(e) => {
+            playerExists(accounts);
             setPlayerInput(e.target.value);
             setError(null);
           }}
@@ -115,4 +123,3 @@ export default function SearchPlayer() {
     </div>
   );
 }
-

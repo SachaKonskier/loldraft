@@ -1,4 +1,5 @@
 export interface IRawChampionResultPerMatch {
+    summonerPuuid: string
     championName: string;
     championId: number;
     death: number;
@@ -22,6 +23,7 @@ export interface IRefinedChampionOutput extends IRawChampionResultPerMatch {
 }
 
 export interface IRefinedChampionDisplayedData {
+    summonerPuuid: string;
     assists: number;
     championBgImg: string;
     championImg: string;
@@ -42,6 +44,5 @@ export interface IRefinedChampionDisplayedData {
 }
 
 export interface IMatch {
-    summonerPuuid: string;
     matches : IRefinedChampionDisplayedData[];
 }

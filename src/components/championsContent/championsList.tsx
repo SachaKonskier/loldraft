@@ -8,10 +8,11 @@ import jungleSvg from "../../../public/jungle.svg";
 import midSvg from "../../../public/middle.svg";
 import adcSvg from "../../../public/adc.svg";
 import supportSvg from "../../../public/support.svg";
+import { IRefinedChampionDisplayedData } from "@/types/matches/matches";
 
 interface IProps {
   data: any;
-  pickRate: any;
+
   position: string;
   player: any;
 }
@@ -25,12 +26,13 @@ const positionSvgMap: Record<string, string> = {
 
 export default function ChampionsList({
   data,
-  pickRate,
   position,
   player,
 }: IProps) {
+
   const positionSvg = positionSvgMap[position?.toUpperCase()] || topSvg;
-  console.log(data, pickRate, position, player)
+  const pickRate = (data: IRefinedChampionDisplayedData) =>
+    ((data.totalGames / data.totalFetchedGames) * 100 ).toFixed(0);
   return (
     <div className="w-full  h-full bg-darkGray p-12 overflow-y-scroll">
       <div className="relative px-8 py-5 grid grid-cols-2 gap-4 w-full h-auto bg-blue-gray rounded-lg">
@@ -43,7 +45,7 @@ export default function ChampionsList({
             className=" bg-gray-400/40 rounded-md"
           />
           <p className=" uppercase text-white font-outfit text-xl italic font-semibold">
-            {player.gameName}
+            {player.mainAccount.gameName}
           </p>
         </div>
         {data &&
