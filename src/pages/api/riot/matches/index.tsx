@@ -1,3 +1,4 @@
+import clientPromise from "@/lib/mongodb";
 import { IChampionOutput } from "@/types/champions/champions";
 import { NextApiRequest, NextApiResponse } from "next";
 const riotUrl = "https://europe.api.riotgames.com/lol/match/v5/matches";
@@ -50,11 +51,23 @@ async function handleMatchesByIds(
   const stringToMatchesArray = matches.split(',');
 
   try {
+    const client = await clientPromise
+    const db = client.db("smart_draft")
+    const collection = db.collection("matchs")
     const results: IChampionOutput[] = [];
     for (let match of stringToMatchesArray) {
-      const res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
+      let res: any
+      const matchFound = await collection.findOne({id: match})
+      if(!matchFound){
+        res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
         (response) => response.json()
-      );
+        )
+        if(res) {
+          await collection.insertOne({id : match, data: res })
+        }
+      } else {
+        res = matchFound.data
+      }
       const filteredDataByPuuid = res.info.participants
         .filter((participant: any) => participant.puuid === puuid)
         .map((element: any) => ({
