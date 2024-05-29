@@ -1,9 +1,10 @@
+import clientPromise from "@/lib/mongodb";
+import { IChampionOutput } from "@/types/champions/champions";
 import { IRefinedChampionOutput } from "@/types/matches/matches";
-import { profile } from "console";
 import { NextApiRequest, NextApiResponse } from "next";
 const riotUrl = "https://europe.api.riotgames.com/lol/match/v5/matches";
 const apiKey = process.env.RIOT_API_KEY;
-const DDRAGON_VERSION = "14.11.1"
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -30,7 +31,7 @@ export default async function handler(
 async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   try {
     const result: string[] = await fetch(
-      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=6&api_key=${apiKey}`,
+      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=4&api_key=${apiKey}`,
       {
         method: "GET",
         redirect: "follow",
@@ -54,16 +55,26 @@ async function handleMatchesByIds(
   const stringToMatchesArray = matches.split(",");
 
   try {
-    const results: IRefinedChampionOutput[] = [];
+    const client = await clientPromise
+    const db = client.db("smart_draft")
+    const collection = db.collection("matchs")
+    const results: IChampionOutput[] = [];
     for (let match of stringToMatchesArray) {
-      const res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
+      let res: any
+      const matchFound = await collection.findOne({id: match})
+      if(!matchFound){
+        res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
         (response) => response.json()
-      );
-      const filteredDataByPuuid = res?.info?.participants
-        ?.filter((participant: any) => participant?.puuid === puuid)
-        ?.map((element: any) => ({
-          summonerPuuid: puuid,
-          profileIcon: element.profileIcon,
+        )
+        if(res) {
+          await collection.insertOne({id : match, data: res })
+        }
+      } else {
+        res = matchFound.data
+      }
+      const filteredDataByPuuid = res.info.participants
+        .filter((participant: any) => participant.puuid === puuid)
+        .map((element: any) => ({
           championName: element.championName,
           championId: element.championId,
           death: element.deaths,
@@ -79,7 +90,7 @@ async function handleMatchesByIds(
           kda: getKda(element.kills, element.deaths, element.assists),
           killParticipation: getKillParticipation(res.info.participants, puuid),
           csPerMinute: parseFloat(
-            ((element.totalMinionsKilled + element.neutralMinionsKilled)  / (element.timePlayed / 60)).toFixed(2)
+            (element.totalMinionsKilled / (element.timePlayed / 60)).toFixed(2)
           ),
           gameType: res.info.gameType,
           visionScore: element.visionScore,
@@ -131,13 +142,11 @@ function getKda(kills: number, deaths: number, assists: number) {
   }
   return ((kills + assists) / deaths).toFixed(2);
 }
-// TODO Why is the KDA NAN Sometimes ?
+
 function mergeData(data: IRefinedChampionOutput[]) {
   const result = data.reduce((acc: any, curr: any) => {
     const champion = acc[curr.championName];
     if (champion) {
-      champion.summonerPuuid = curr.summonerPuuid;
-      champion.profileIcon = curr.profileIcon;
       champion.name = curr.championName;
       champion.id = curr.championId;
       champion.kills += curr.kills;
@@ -155,8 +164,6 @@ function mergeData(data: IRefinedChampionOutput[]) {
       champion.visionScore += curr.visionScore;
     } else {
       acc[curr.championName] = {
-        summonerPuuid: curr.summonerPuuid,
-        profileIcon: curr.profileIcon,
         name: curr.championName,
         id: curr.championId,
         kills: curr.kills,
@@ -179,7 +186,6 @@ function mergeData(data: IRefinedChampionOutput[]) {
 
   for (const champion in result) {
     const stats = result[champion];
-    const profileLink = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${stats.profileIcon}.png`;
     stats.csPerMinute = (stats.csPerMinute / stats.totalGames).toFixed(2);
     stats.kda = (stats.kda / stats.totalGames).toFixed(2);
     stats.killParticipation = (
@@ -188,7 +194,6 @@ function mergeData(data: IRefinedChampionOutput[]) {
     stats.winrate = ((stats.wins / stats.totalGames) * 100).toFixed(2);
     stats.championImg = `/assets/champion/${stats.name}.png`;
     stats.championBgImg = `/assets/background/${stats.name}.jpg`;
-    stats.profileIcon = profileLink;
     stats.totalFetchedGames = data.length;
     stats.visionScore = (stats.visionScore / stats.totalGames).toFixed(2);
   }
