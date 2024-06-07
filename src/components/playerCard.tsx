@@ -56,13 +56,7 @@ export default function PlayerCardComponent({
     console.log('matches for main account added')
     getMatchesData("main");
   }
-  console.log('player', player)
-  if (player?.subAccounts?.length > 0 && player?.subAccounts[0]?.puuid  && !isFetch
-    // && checkIfSummonerPuuidExists(player?.subAccounts[0]?.puuid, player?.matches)
-  ){
-    console.log('matches for subaccounts added')
-    getMatchesData("sub");
-  }
+ 
 
   const handleSubAccountOnClick = async () => {
     const summoner = (await getSummoner(playerInput)) as any;

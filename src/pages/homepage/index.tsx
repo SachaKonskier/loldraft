@@ -35,7 +35,7 @@ export default function HomePage() {
     <div className="flex min-h-screen h-fit w-full">
       <div className="w-auto min-w-[370px] bg-blue-gray h-auto pt-10">
         <div className="flex items center px-8 py-5">
-          <h1 className="uppercase text-white font-outfit text-5xl italic font-extrabold">
+          <h1 className="uppercase text-white font-outfit text-4xl italic font-extrabold">
             smart draft
           </h1>
           {/* <button className="w-[42px] h-[42px] bg-light-green rounded-lg rotate-45 ml-auto">
