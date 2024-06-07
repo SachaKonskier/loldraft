@@ -46,7 +46,7 @@ export default function SearchPlayer() {
       });
       return;
     }
-   
+
     if (summonerPuuid?.puuid) {
       addMainAccount(summonerPuuid);
     } else {
