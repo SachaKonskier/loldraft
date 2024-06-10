@@ -34,7 +34,7 @@ export default function ChampionsList({
   const pickRate = (data: IRefinedChampionDisplayedData) =>
     ((data.totalGames / data.totalFetchedGames) * 100 ).toFixed(0);
   return (
-    <div className="w-full  h-full bg-darkGray p-12 overflow-y-scroll">
+    <div className="w-full  h-full bg-darkGray py-6 px-4">
       <div className="relative px-8 py-5 grid grid-cols-2 gap-4 w-full h-auto bg-blue-gray rounded-lg">
         <div className="flex items-center absolute gap-4 -top-4 -left-2">
           <Image

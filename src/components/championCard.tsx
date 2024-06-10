@@ -83,7 +83,7 @@ export default function ChampionCard({
 
   return (
     <div
-      className={`shadow-md px-4 py-3 relative opacity-90 hover:opacity-100`}
+      className="shadow-md px-4 py-3 relative opacity-90 hover:opacity-100"
     >
       <div className={`absolute inset-0 rounded-md overflow-hidden `}>
         <Image
@@ -103,7 +103,7 @@ export default function ChampionCard({
          
           className="rounded-full border-2 border-light-green "
         />
-        <h1 className="uppercase font-black text-xl flex-1 line-clamp-1">
+        <h1 className="uppercase font-black text-lg flex-1 line-clamp-1">
           {champion.name}
         </h1>
         <span className="font-light">W/R</span>

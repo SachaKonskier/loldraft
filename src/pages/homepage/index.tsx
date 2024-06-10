@@ -1,20 +1,23 @@
-
+// React
+import { useState } from "react";
 // Icons
-import PlayerCardComponent from "@/components/playerCard";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+
 // Components
 import ChampionsList from "@/components/championsContent/championsList";
 import SearchPlayer from "@/components/search/searchPlayer";
+import PlayerCardComponent from "@/components/playerCard";
 // Utils
 import { getMostPlayedPosition } from "@/utils/utils";
 // Store
 import { usePlayersStore } from "@/providers/players-store-provider";
 
 export default function HomePage() {
- 
   const { accounts } = usePlayersStore((state) => state);
-// TODO - get the most played position from the selected account / default is accounts[0]
- const selectedAccount = accounts[0]
+  // TODO - get the most played position from the selected account / default is accounts[0]
+  const selectedAccount = accounts[0];
   const position = getMostPlayedPosition(selectedAccount?.matches);
+  const [isCollapse, setIsCollapse] = useState(false);
   const emptyResults = () => {
     return (
       <div className="bg-darkGray uppercase h-auto w-full  font-barlow text-gray-500   italic font-bold text-[200px] leading-none truncate relative">
@@ -33,19 +36,37 @@ export default function HomePage() {
   };
   return (
     <div className="flex min-h-screen h-fit w-full">
-      <div className="w-auto min-w-[370px] bg-blue-gray h-auto pt-10">
-        <div className="flex items center px-8 py-5">
-          <h1 className="uppercase text-white font-outfit text-4xl italic font-extrabold">
+      <div
+        className={`w-auto bg-blue-gray h-auto pt-10 relative ${
+          isCollapse ? "w-40" : "min-w-[370px] "
+        } transition-all ease-in-out`}
+      >
+        <div className="flex items center px-8 py-5 transition-all ease-in-out">
+          <button
+            className={`absolute -right-2 z-10 ${
+              isCollapse ? "rotate-180" : ""
+            } transition-all ease-in-out`}
+            onClick={() => setIsCollapse(!isCollapse)}
+          >
+            <KeyboardDoubleArrowRightIcon className="text-black bg-white rounded-full" />
+          </button>
+          <h1
+            className={`uppercase text-white font-outfit ${
+              isCollapse ? "text-2xl" : "text-4xl"
+            } italic font-extrabold`}
+          >
             smart draft
           </h1>
           {/* <button className="w-[42px] h-[42px] bg-light-green rounded-lg rotate-45 ml-auto">
             <EditOutlinedIcon className="text-white -rotate-45" />
           </button> */}
         </div>
-        <div className="px-8 py-5">
-          {/* input field */}
-          <SearchPlayer />
-        </div>
+        {!isCollapse && (
+          <div className="px-8 py-5">
+            {/* input field */}
+            <SearchPlayer />
+          </div>
+        )}
 
         {accounts?.map((player: any) => (
           <div key={player.mainAccount.puuid} className="px-8 py-5">
@@ -54,18 +75,18 @@ export default function HomePage() {
         ))}
       </div>
       {accounts.length === 0 && emptyResults()}
-     
+
       {accounts?.map((player: any) => (
-        
         <div key={player.mainAccount.puuid} className="w-full">
-          <ChampionsList
-          data={player.matches}
-          position={position}
-          player={player}
-        />
+          <div className="w-full h-full">
+            <ChampionsList
+              data={player.matches}
+              position={position}
+              player={player}
+            />
+          </div>
         </div>
-          ))}
+      ))}
     </div>
-  
   );
 }
