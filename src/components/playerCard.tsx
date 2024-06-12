@@ -12,51 +12,65 @@ import { IPlayer } from "@/types/player";
 import { getSummoner } from "@/utils/utils";
 // Store
 import { usePlayersStore } from "@/providers/players-store-provider";
-import {  ISearchAccounts } from "@/stores/players-store";
+import { ISearchAccounts } from "@/stores/players-store";
 // Api Services
 import { RiotApi } from "@/modules/riot/riot.api";
 import { IMatch } from "@/types/matches/matches";
 const riotApi = RiotApi;
 export default function PlayerCardComponent({
   player,
+  isCollapse,
 }: {
   player: ISearchAccounts;
+  isCollapse: boolean;
 }) {
   const [playerInput, setPlayerInput] = useState("");
   const [openModal, setOpenModal] = useState(false);
-  const [isFetch, setIsFetch] = useState(false)
+  const [isFetch, setIsFetch] = useState(false);
   const [error, setError] = useState<any>();
-  const {  accounts, addMainAccount, addSubAccount, removeMainAccount, removeSubAccount, addMatches, updateMatches } =
-    usePlayersStore((state) => state);
-    function checkIfSummonerPuuidExists(summonerPuuid: string, data:any) {
-      return data.hasOwnProperty(summonerPuuid);
-  }
-  console.log('TEST TEST', accounts?.map((acc) => acc?.subAccounts[0]?.puuid))
+  const {
+    accounts,
+    addMainAccount,
+    addSubAccount,
+    removeMainAccount,
+    removeSubAccount,
+    addMatches,
+    updateMatches,
+  } = usePlayersStore((state) => state);
+
+  console.log("TEST TEST", accounts);
   async function getMatchesData(accountType: string) {
     if (accountType === "main") {
-      const matches = await riotApi.getRawMatchList(player.mainAccount.puuid) as any;
-      const filteredMatches = await riotApi.getFilteredMatchList(player.mainAccount.puuid, matches) as IMatch[];
+      const matches = (await riotApi.getRawMatchList(
+        player.mainAccount.puuid
+      )) as any;
+      const filteredMatches = (await riotApi.getFilteredMatchList(
+        player.mainAccount.puuid,
+        matches
+      )) as IMatch[];
       addMatches(player?.mainAccount?.puuid, filteredMatches);
-      
     }
-    
+
     if (accountType === "sub") {
-      console.log('in getMatchesData for sub', player)
-      const matches = await riotApi.getRawMatchList(player?.subAccounts[0]?.puuid) as any;
-      console.log(' getMatchesData matches', matches)
-      const filteredMatches = await riotApi.getFilteredMatchList(player?.subAccounts[0]?.puuid, matches) as IMatch[];
-      setIsFetch(true)
-      console.log('filteredMatches', filteredMatches.length)
+      console.log("in getMatchesData for sub", player);
+      const matches = (await riotApi.getRawMatchList(
+        player?.subAccounts[0]?.puuid
+      )) as any;
+      console.log(" getMatchesData matches", matches);
+      const filteredMatches = (await riotApi.getFilteredMatchList(
+        player?.subAccounts[0]?.puuid,
+        matches
+      )) as IMatch[];
+      setIsFetch(true);
+      console.log("filteredMatches", filteredMatches.length);
       updateMatches(player?.mainAccount?.puuid, filteredMatches);
-      console.log('updatedPlayer?', player)
-      
+      console.log("updatedPlayer?", player);
     }
   }
   if (player?.mainAccount?.puuid && player?.matches?.length === 0) {
-    console.log('matches for main account added')
+    console.log("matches for main account added");
     getMatchesData("main");
   }
- 
 
   const handleSubAccountOnClick = async () => {
     const summoner = (await getSummoner(playerInput)) as any;
@@ -103,18 +117,24 @@ export default function PlayerCardComponent({
             className=""
           />
         </p>
-        <span className="pl-4 font-normal border border-white  h-auto w-full py-1 rounded-md">
-          {player.mainAccount.gameName}
-        </span>
-        <span className="ml-auto hover:animate-pulse hover:scale-110">
-          <button onClick={handleEditModal}>
-            <EditOutlinedIcon className="text-white h-5 w-5" />
-          </button>
-        </span>
+        {!isCollapse ? (
+          <>
+            <span className="pl-4 font-normal border border-white  h-auto w-full py-1 rounded-md">
+              {player.mainAccount.gameName}
+            </span>
+            <span className="ml-auto hover:animate-pulse hover:scale-110">
+              <button onClick={handleEditModal}>
+                <EditOutlinedIcon className="text-white h-5 w-5" />
+              </button>
+            </span>
+          </>
+        ) : (
+          ""
+        )}
       </div>
       {player?.subAccounts?.length < 2 && (
         <div className="relative gap-2  h-auto flex items-center rounded-lg">
-          <div className="relative w-full pb-2">
+         {!isCollapse&&  <div className="relative w-full pb-2">
             <input
               type="text"
               className={`w-full h-auto font-normal  placeholder:text-gray-600 bg-white/40 px-3 py-2 text-gray-600 rounded-lg focus:outline-none caret-light-green  ${
@@ -139,7 +159,7 @@ export default function PlayerCardComponent({
                 <AddIcon className="text-white rotate-90" />
               </button>
             </span>
-          </div>
+          </div>}
         </div>
       )}
       {error && (
@@ -161,9 +181,9 @@ export default function PlayerCardComponent({
               <CloseIcon className="text-white hover:text-red-500 disabled:" />
             </button>
           )}
-          <p className="text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2">
+         {!isCollapse ?  <p className={`text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2`}>
             {`${player.mainAccount.gameName}#${player.mainAccount.tagLine}`}
-          </p>
+          </p> : <p className={`text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2`}>{`${player.mainAccount.gameName}`}</p>}
         </div>
       )}
       {player?.subAccounts?.map((account: any) => (
@@ -181,7 +201,7 @@ export default function PlayerCardComponent({
             </button>
           )}
           <p
-            className={`text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2`}
+            className={`text-red-200 h-10 bg-white/20 flex items-center rounded-lg w-full pl-2 `}
           >
             {`${account.gameName}#${account.tagLine}`}
           </p>

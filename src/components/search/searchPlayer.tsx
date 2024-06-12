@@ -1,7 +1,4 @@
-// React
-import { useEffect, useState } from "react";
 // Formik
-import { useFormik } from "formik";
 import { useForm, SubmitHandler } from "react-hook-form";
 // Icons
 import AddIcon from "@mui/icons-material/Add";
@@ -27,12 +24,7 @@ export default function SearchPlayer() {
     handleAddPlayerCard(data.summoner);
 
   const { addMainAccount, accounts } = usePlayersStore((state) => state);
-  const formik = useFormik({
-    initialValues: {
-      summoner: "",
-    },
-    onSubmit: (values) => {},
-  });
+ 
   if (playerExists(accounts, getValues("summoner"))) {
     console.log(getValues("summoner"));
     setError("summoner", {

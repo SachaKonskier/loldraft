@@ -24,6 +24,7 @@ export interface IRefinedChampionOutput extends IRawChampionResultPerMatch {
 
 export interface IRefinedChampionDisplayedData {
     summonerPuuid: string;
+    profileIcon: string;
     assists: number;
     championBgImg: string;
     championImg: string;

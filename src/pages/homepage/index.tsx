@@ -70,7 +70,7 @@ export default function HomePage() {
 
         {accounts?.map((player: any) => (
           <div key={player.mainAccount.puuid} className="px-8 py-5">
-            <PlayerCardComponent player={player} />
+            <PlayerCardComponent player={player} isCollapse={isCollapse}/>
           </div>
         ))}
       </div>
