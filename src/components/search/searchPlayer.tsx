@@ -25,7 +25,6 @@ export default function SearchPlayer() {
     handleAddPlayerCard(data.summoner);
 
   const { addMainAccount, accounts } = usePlayersStore((state) => state);
-
   if (playerExists(accounts, getValues("summoner"))) {
     setError("summoner", {
       type: "manual",

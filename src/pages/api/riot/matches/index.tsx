@@ -4,7 +4,7 @@ import { IRefinedChampionOutput } from "@/types/matches/matches";
 import { NextApiRequest, NextApiResponse } from "next";
 const riotUrl = "https://europe.api.riotgames.com/lol/match/v5/matches";
 const apiKey = process.env.RIOT_API_KEY;
-
+const DDRAGON_VERSION = "14.11.1"
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -148,6 +148,7 @@ function mergeData(data: IRefinedChampionOutput[]) {
     const champion = acc[curr.championName];
     if (champion) {
       champion.summonerPuuid = curr.summonerPuuid;
+      champion.profileIcon = curr.profileIcon;
       champion.name = curr.championName;
       champion.id = curr.championId;
       champion.kills += curr.kills;
@@ -166,6 +167,7 @@ function mergeData(data: IRefinedChampionOutput[]) {
     } else {
       acc[curr.championName] = {
         summonerPuuid: curr.summonerPuuid,
+        profileIcon: curr.profileIcon,
         name: curr.championName,
         id: curr.championId,
         kills: curr.kills,
@@ -188,6 +190,7 @@ function mergeData(data: IRefinedChampionOutput[]) {
 
   for (const champion in result) {
     const stats = result[champion];
+    const profileLink = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${stats.profileIcon}.png`;
     stats.csPerMinute = (stats.csPerMinute / stats.totalGames).toFixed(2);
     stats.kda = (stats.kda / stats.totalGames).toFixed(2);
     stats.killParticipation = (
@@ -196,6 +199,7 @@ function mergeData(data: IRefinedChampionOutput[]) {
     stats.winrate = ((stats.wins / stats.totalGames) * 100).toFixed(2);
     stats.championImg = `/assets/champion/${stats.name}.png`;
     stats.championBgImg = `/assets/background/${stats.name}.jpg`;
+    stats.profileIcon = profileLink;
     stats.totalFetchedGames = data.length;
     stats.visionScore = (stats.visionScore / stats.totalGames).toFixed(2);
   }
