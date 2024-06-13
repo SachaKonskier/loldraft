@@ -1,8 +1,6 @@
 import Image from "next/image";
 import { IRefinedChampionDisplayedData } from "@/types/matches/matches";
 import CircleProgressBar from "./circleProgressBar";
-import { parse } from "path";
-
 export default function ChampionCard({
   champion,
 }: {

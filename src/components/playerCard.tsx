@@ -5,11 +5,15 @@ import { useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import svgTop from "../../public/top.svg";
+import topSvg from "../../public/top.svg";
+import jungleSvg from "../../public/jungle.svg";
+import midSvg from "../../public/middle.svg";
+import adcSvg from "../../public/adc.svg";
+import supportSvg from "../../public/support.svg";
 // Types
 import { IPlayer } from "@/types/player";
 // Utils
-import { getSummoner } from "@/utils/utils";
+import { getMostPlayedPosition, getSummoner } from "@/utils/utils";
 // Store
 import { usePlayersStore } from "@/providers/players-store-provider";
 import { ISearchAccounts } from "@/stores/players-store";
@@ -104,13 +108,23 @@ export default function PlayerCardComponent({
   function handleEditModal() {
     setOpenModal(!openModal);
   }
-
+  console.log("accounts", accounts)
+  const positionSvgMap: Record<string, string> = {
+    TOP: topSvg,
+    JUNGLE: jungleSvg,
+    MIDDLE: midSvg,
+    BOTTOM: adcSvg,
+    UTILITY: supportSvg,
+  };
+  const position = getMostPlayedPosition(player?.matches);
+  const positionSvg = positionSvgMap[position?.toUpperCase()] || topSvg;
+  
   return (
     <div className=" max-w-[320px] w-auto h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-r from-light-green to-transparent overflow-x-auto">
       <div className="text-white pb-5 justify-center items-center flex gap-4 h-auto w-full">
         <p className="p-1 border border-white rounded-md ">
           <Image
-            src={svgTop}
+            src={positionSvg}
             alt="My SVG"
             width={30}
             height={30}
