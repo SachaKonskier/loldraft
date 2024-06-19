@@ -29,27 +29,42 @@ export function getMostPlayedPosition(data: any) {
 export  function checkInputFormat(input: string, setError: any) {
     // if the the input is more that 22 char it's not a valid input
     if (input.length > 22) {
-      setError("Invalid format input: too long");
+      setError("summoner", {
+        type: "manual",
+        message: 'Invalid format input: too long (max 22)',
+      });
       return false;
     }
     // if there is no # in the input it's not a valid input
     if (!input.includes("#")) {
-      setError("Invalid format input: missing #");
+      setError("summoner", {
+        type: "manual",
+        message: 'Invalid format input: missing #',
+      });
       return false;
     }
     // if the input has more than one # it's not a valid input
     if (input.split("#").length > 2) {
-      setError("Invalid format input: too many #");
+      setError("summoner", {
+        type: "manual",
+        message: 'Invalid format input: too many #',
+      });
       return false;
     }
     // if the input before the split is more that 16 char it's not a valid input
     if (input.split("#")[0].length > 16) {
-      setError("Invalid format input: too long before # (max 16)");
+      setError("summoner", {
+        type: "manual",
+        message: 'Invalid format input: too long before # (max 16)',
+      });
       return false;
     }
     // if the input after the split is more that 6 char it's not a valid input
     if (input.split("#")[0].length <= 16 && input.split("#")[1].length > 5) {
-      setError("Invalid format input: too long after # (max 5)");
+      setError("summoner", {
+        type: "manual",
+        message: 'Invalid format input: too long after # (max 5)',
+      });
       return false;
     }
     return true;

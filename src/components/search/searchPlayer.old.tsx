@@ -8,6 +8,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { getSummoner } from "@/utils/utils";
 import { usePlayersStore } from "@/providers/players-store-provider";
 import { ISearchAccounts } from "@/stores/players-store";
+import { set } from "react-hook-form";
 const TITLE = "Add a new player !";
 
 export default function SearchPlayer() {

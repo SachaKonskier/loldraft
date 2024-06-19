@@ -20,6 +20,7 @@ import { ISearchAccounts } from "@/stores/players-store";
 // Api Services
 import { RiotApi } from "@/modules/riot/riot.api";
 import { IMatch } from "@/types/matches/matches";
+
 const riotApi = RiotApi;
 export default function PlayerCardComponent({
   player,
@@ -42,7 +43,6 @@ export default function PlayerCardComponent({
     updateMatches,
   } = usePlayersStore((state) => state);
 
-  console.log("TEST TEST", accounts);
   async function getMatchesData(accountType: string) {
     if (accountType === "main") {
       const matches = (await riotApi.getRawMatchList(
@@ -56,23 +56,23 @@ export default function PlayerCardComponent({
     }
 
     if (accountType === "sub") {
-      console.log("in getMatchesData for sub", player);
+  
       const matches = (await riotApi.getRawMatchList(
         player?.subAccounts[0]?.puuid
       )) as any;
-      console.log(" getMatchesData matches", matches);
+   
       const filteredMatches = (await riotApi.getFilteredMatchList(
         player?.subAccounts[0]?.puuid,
         matches
       )) as IMatch[];
       setIsFetch(true);
-      console.log("filteredMatches", filteredMatches.length);
+   
       updateMatches(player?.mainAccount?.puuid, filteredMatches);
-      console.log("updatedPlayer?", player);
+     
     }
   }
   if (player?.mainAccount?.puuid && player?.matches?.length === 0) {
-    console.log("matches for main account added");
+  
     getMatchesData("main");
   }
 
@@ -108,7 +108,22 @@ export default function PlayerCardComponent({
   function handleEditModal() {
     setOpenModal(!openModal);
   }
-  console.log("accounts", accounts)
+
+  function getProfileIcon(searchAccount: IPlayer): string | undefined {
+    // Find the account with the matching puuid
+    const account = accounts.find((account) => account.mainAccount.puuid === searchAccount.puuid);
+    
+    if (account) {
+      // If the account is found, get the first profileIcon
+      const profileIcon = Object.keys(account.matches).map(
+        (match) => account.matches[match].profileIcon
+      )[0];
+      return profileIcon;
+    }
+    
+    // If no account is found, return undefined
+    return undefined; }
+  
   const positionSvgMap: Record<string, string> = {
     TOP: topSvg,
     JUNGLE: jungleSvg,
@@ -118,7 +133,8 @@ export default function PlayerCardComponent({
   };
   const position = getMostPlayedPosition(player?.matches);
   const positionSvg = positionSvgMap[position?.toUpperCase()] || topSvg;
-  
+  const profileIconUrl = getProfileIcon(player.mainAccount)
+
   return (
     <div className=" max-w-[320px] w-auto h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-r from-light-green to-transparent overflow-x-auto">
       <div className="text-white pb-5 justify-center items-center flex gap-4 h-auto w-full">
@@ -148,32 +164,34 @@ export default function PlayerCardComponent({
       </div>
       {player?.subAccounts?.length < 2 && (
         <div className="relative gap-2  h-auto flex items-center rounded-lg">
-         {!isCollapse&&  <div className="relative w-full pb-2">
-            <input
-              type="text"
-              className={`w-full h-auto font-normal  placeholder:text-gray-600 bg-white/40 px-3 py-2 text-gray-600 rounded-lg focus:outline-none caret-light-green  ${
-                error ? "text-red-500" : ""
-              }`}
-              placeholder="Game Name + #EX"
-              value={playerInput}
-              onChange={(e) => {
-                setPlayerInput(e.target.value);
-                setError(null);
-              }}
-              onKeyUp={(event) => handleKeyPressed(event)}
-            />
+          {!isCollapse && (
+            <div className="relative w-full pb-2">
+              <input
+                type="text"
+                className={`w-full h-auto font-normal  placeholder:text-gray-600 bg-white/40 px-3 py-2 text-gray-600 rounded-lg focus:outline-none caret-light-green  ${
+                  error ? "text-red-500" : ""
+                }`}
+                placeholder="Game Name + #EX"
+                value={playerInput}
+                onChange={(e) => {
+                  setPlayerInput(e.target.value);
+                  setError(null);
+                }}
+                onKeyUp={(event) => handleKeyPressed(event)}
+              />
 
-            <span className="absolute top-2 inset-y-0 right-0 pr-4 ">
-              <button
-                className="hover:animate-pulse hover:scale-110"
-                disabled={playerInput.length === 0}
-                type="submit"
-                onClick={() => handleSubAccountOnClick()}
-              >
-                <AddIcon className="text-white rotate-90" />
-              </button>
-            </span>
-          </div>}
+              <span className="absolute top-2 inset-y-0 right-0 pr-4 ">
+                <button
+                  className="hover:animate-pulse hover:scale-110"
+                  disabled={playerInput.length === 0}
+                  type="submit"
+                  onClick={() => handleSubAccountOnClick()}
+                >
+                  <AddIcon className="text-white rotate-90" />
+                </button>
+              </span>
+            </div>
+          )}
         </div>
       )}
       {error && (
@@ -195,9 +213,23 @@ export default function PlayerCardComponent({
               <CloseIcon className="text-white hover:text-red-500 disabled:" />
             </button>
           )}
-         {!isCollapse ?  <p className={`text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2`}>
-            {`${player.mainAccount.gameName}#${player.mainAccount.tagLine}`}
-          </p> : <p className={`text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2`}>{`${player.mainAccount.gameName}`}</p>}
+          {!isCollapse ? (
+            <p
+              className={`text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2`}
+            >
+              {`${player.mainAccount.gameName}#${player.mainAccount.tagLine}`}
+            </p>
+          ) : (
+            <p className="flex justify-center w-full">
+            <Image
+              alt="test"
+              src={profileIconUrl || ""}
+              width={40}
+              height={40}
+              className="w-fit h-fit"
+            />
+            </p>
+          )}
         </div>
       )}
       {player?.subAccounts?.map((account: any) => (

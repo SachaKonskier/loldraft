@@ -1,5 +1,5 @@
 // Formik
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, set } from "react-hook-form";
 // Icons
 import AddIcon from "@mui/icons-material/Add";
 // Types
@@ -17,6 +17,7 @@ export default function SearchPlayer() {
     register,
     handleSubmit,
     getValues,
+  resetField,
     setError,
     formState: { errors },
   } = useForm<IFormInput>();
@@ -24,9 +25,8 @@ export default function SearchPlayer() {
     handleAddPlayerCard(data.summoner);
 
   const { addMainAccount, accounts } = usePlayersStore((state) => state);
- 
+
   if (playerExists(accounts, getValues("summoner"))) {
-    console.log(getValues("summoner"));
     setError("summoner", {
       type: "manual",
       message: "summoner already exists!",
@@ -52,6 +52,7 @@ export default function SearchPlayer() {
     } else {
       return;
     }
+    resetField("summoner");
   }
 
   return (
@@ -63,20 +64,21 @@ export default function SearchPlayer() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="relative">
           <Input {...register("summoner")} />
-         
+
           <Button
             type="submit"
             variant={"ghost"}
             className="absolute top-2 inset-y-0 right-0 pr-4 "
+            disabled={accounts.length > 4 }
           >
             <AddIcon className="text-black rotate-90" />
           </Button>
         </div>
         {errors.summoner && (
-            <p className="text-red-500 text-sm italic pt-2">
-              {errors.summoner.message}
-            </p>
-          )}
+          <p className="text-red-500 text-sm italic pt-2">
+            {errors.summoner.message}
+          </p>
+        )}
       </form>
     </div>
   );

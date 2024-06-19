@@ -11,12 +11,11 @@ import PlayerCardComponent from "@/components/playerCard";
 import { getMostPlayedPosition } from "@/utils/utils";
 // Store
 import { usePlayersStore } from "@/providers/players-store-provider";
+import { get } from "http";
 
 export default function HomePage() {
   const { accounts } = usePlayersStore((state) => state);
   // TODO - get the most played position from the selected account / default is accounts[0]
-  const selectedAccount = accounts[0];
-  const position = getMostPlayedPosition(selectedAccount?.matches);
   const [isCollapse, setIsCollapse] = useState(false);
   const emptyResults = () => {
     return (
@@ -44,7 +43,7 @@ export default function HomePage() {
         <div className="flex items center px-8 py-5 transition-all ease-in-out">
           <button
             className={`absolute -right-2 z-10 ${
-              isCollapse ? "rotate-180" : ""
+              !isCollapse ? "rotate-180" : ""
             } transition-all ease-in-out`}
             onClick={() => setIsCollapse(!isCollapse)}
           >
@@ -81,7 +80,7 @@ export default function HomePage() {
           <div className="w-full h-full">
             <ChampionsList
               data={player.matches}
-              position={position}
+              position={getMostPlayedPosition(player.matches)}
               player={player}
             />
           </div>

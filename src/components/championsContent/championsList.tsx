@@ -9,6 +9,7 @@ import midSvg from "../../../public/middle.svg";
 import adcSvg from "../../../public/adc.svg";
 import supportSvg from "../../../public/support.svg";
 import { IRefinedChampionDisplayedData } from "@/types/matches/matches";
+import { usePlayersStore } from "@/providers/players-store-provider";
 
 interface IProps {
   data: any;
@@ -29,13 +30,14 @@ export default function ChampionsList({
   position,
   player,
 }: IProps) {
+  const { accounts} = usePlayersStore((state) => state);
 
   const positionSvg = positionSvgMap[position?.toUpperCase()] || topSvg;
   const pickRate = (data: IRefinedChampionDisplayedData) =>
     ((data.totalGames / data.totalFetchedGames) * 100 ).toFixed(0);
   return (
-    <div className="w-full  h-full bg-darkGray py-6 px-4">
-      <div className="relative px-8 py-5 grid grid-cols-2 gap-4 w-full h-auto bg-blue-gray rounded-lg">
+    <div className="w-full  h-full bg-darkGray py-6 px-4 ">
+      <div className={`relative px-8 py-5 grid ${accounts.length > 2 ? 'grid-cols-1' : 'grid-cols-2'}  gap-4 w-full h-auto bg-blue-gray rounded-lg `}>
         <div className="flex items-center absolute gap-4 -top-4 -left-2">
           <Image
             src={positionSvg}
@@ -48,12 +50,13 @@ export default function ChampionsList({
             {player.mainAccount.gameName}
           </p>
         </div>
+        
         {data &&
           Object?.keys(data).map((champion) => (
             <div
               className={`${
                 parseFloat(pickRate(data[champion])) > 33 ? "col-span-2" : ""
-              }`}
+              } overflow-hidden` }
               key={data[champion].id}
             >
               <ChampionCard champion={data[champion]} />
