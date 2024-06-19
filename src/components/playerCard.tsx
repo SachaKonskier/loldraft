@@ -111,18 +111,13 @@ export default function PlayerCardComponent({
 
   function getProfileIcon(searchAccount: IPlayer): string | undefined {
     // Find the account with the matching puuid
-    const account = accounts.find((account) => account.mainAccount.puuid === searchAccount.puuid);
-    
-    if (account) {
-      // If the account is found, get the first profileIcon
-      const profileIcon = Object.keys(account.matches).map(
-        (match) => account.matches[match].profileIcon
-      )[0];
-      return profileIcon;
-    }
-    
-    // If no account is found, return undefined
-    return undefined; }
+    const account = accounts.find(acc => acc.mainAccount.puuid === searchAccount.puuid);
+  
+    // If account is found, get the first profileIcon using optional chaining and array destructuring
+    const profileIcon = account ? Object.values(account.matches).map(match => match.profileIcon)[0] : undefined;
+  
+    return profileIcon;
+  }
   
   const positionSvgMap: Record<string, string> = {
     TOP: topSvg,

@@ -45,5 +45,6 @@ export interface IRefinedChampionDisplayedData {
 }
 
 export interface IMatch {
+    profileIcon: any;
     matches : IRefinedChampionDisplayedData[];
 }
