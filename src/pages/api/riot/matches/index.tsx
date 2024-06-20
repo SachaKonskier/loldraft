@@ -1,5 +1,4 @@
 import clientPromise from "@/lib/mongodb";
-import { IChampionOutput } from "@/types/champions/champions";
 import { IRefinedChampionOutput } from "@/types/matches/matches";
 import { NextApiRequest, NextApiResponse } from "next";
 const riotUrl = "https://europe.api.riotgames.com/lol/match/v5/matches";
@@ -58,7 +57,7 @@ async function handleMatchesByIds(
     const client = await clientPromise
     const db = client.db("smart_draft")
     const collection = db.collection("matchs")
-    const results: IChampionOutput[] = [];
+    const results: IRefinedChampionOutput[] = [];
     for (let match of stringToMatchesArray) {
       let res: any
       const matchFound = await collection.findOne({id: match})
