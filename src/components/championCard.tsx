@@ -1,25 +1,31 @@
 import Image from "next/image";
-import { IChampionDisplayedData } from "@/types/champions/champions";
+import { IRefinedChampionDisplayedData } from "@/types/matches/matches";
 import CircleProgressBar from "./circleProgressBar";
-
 export default function ChampionCard({
   champion,
 }: {
-  champion: IChampionDisplayedData;
+  champion: IRefinedChampionDisplayedData;
 }) {
+
   function getKdaThreshold(kda: string) {
     switch (true) {
       case parseFloat(kda) <= 1.5:
         return "text-veryLow";
       case parseFloat(kda) <= 2.5:
         return "text-medium";
-      case parseFloat(kda) <= 3.5:
+      case parseFloat(kda) <= 4.5:
         return "text-high";
-      case parseFloat(kda) >= 4.5:
+      case parseFloat(kda) > 4.5:
         return "text-veryHigh";
       default:
         return "";
     }
+  }
+  const getKda = (kills: number, deaths: number, assists: number) => {
+    if (deaths === 0) {
+      return ((kills + assists) / 1).toFixed(2);
+    }
+    return ((kills + assists) / deaths).toFixed(2);
   }
   function getKPThreshold(kp: string) {
     switch (true) {
@@ -36,14 +42,15 @@ export default function ChampionCard({
     }
   }
   function csPerMinuteThreshold(csPerMinute: string) {
+
     switch (true) {
       case parseFloat(csPerMinute) < 3:
         return "text-veryLow";
       case parseFloat(csPerMinute) < 6:
         return "text-low";
-      case parseFloat(csPerMinute) > 6:
+      case parseFloat(csPerMinute) > 6 && parseFloat(csPerMinute) < 8:
         return "text-high";
-      case parseFloat(csPerMinute) > 8:
+      case parseFloat(csPerMinute) >= 8:
         return "text-veryHigh";
       default:
         return "";
@@ -74,26 +81,27 @@ export default function ChampionCard({
 
   return (
     <div
-      className={`shadow-md px-4 py-3 relative opacity-90 hover:opacity-100`}
+      className="shadow-md px-4 py-3 relative opacity-90 hover:opacity-100"
     >
       <div className={`absolute inset-0 rounded-md overflow-hidden `}>
         <Image
           src={champion.championBgImg}
           alt={champion.name}
           layout="fill"
-          objectFit="cover"
+          className="rounded-md object-cover object-center"
         />
       </div>
 
-      <div className=" flex items-center gap-2 relative z-10 font-outfit text-white font-medium w-full ">
+      <div className=" flex items-center gap-2 relative z-10 font-outfit text-white font-medium w-full">
         <Image
           src={champion.championImg}
           alt={champion.name}
           width={30}
           height={30}
+         
           className="rounded-full border-2 border-light-green "
         />
-        <h1 className="uppercase font-black text-xl flex-1 line-clamp-1">
+        <h1 className="uppercase font-black text-lg flex-1 line-clamp-1">
           {champion.name}
         </h1>
         <span className="font-light">W/R</span>
@@ -130,7 +138,7 @@ export default function ChampionCard({
               1
             )}
           </span>
-          <span className={`font-black ${getKdaThreshold(champion.kda)}`}>
+          <span className={`font-black ${getKdaThreshold(getKda(champion.kills, champion.deaths, champion.assists))}`}>
             {kda}
           </span>
         </div>
