@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Inter } from "next/font/google";
+import { useRouter } from "next/navigation";
 import {SubmitHandler, useForm} from "react-hook-form";
 interface IFormInput {
   username: string;
@@ -10,10 +11,11 @@ interface IFormInput {
 const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   const { register, handleSubmit, getValues, resetField, reset, formState: { errors }, } = useForm<IFormInput>();
-  
+  const router = useRouter();
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
-   
-    console.log(data.username);
+   if (data.username ==="demo_user" && data.password === "randompassword")
+    router.push("/homepage");
+    
 
   }
   return (
@@ -22,16 +24,14 @@ export default function Home() {
     >
      
       <div>
-        <h1 className="text-4xl font-bold text-white uppercase pb-12 font-barlow">Smart Draft</h1>
+        <h1 className="text-5xl  text-white uppercase pb-12 font-barlow font-black italic">Smart Draft</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
         <section className="text-white italic">
           <Label className="">User ID</Label>
           <Input {...register("username")} className="text-black focus-visible:ring-0 focus-visible:ring-offset-0 mt-2 mb-6"/>
           <Label>Password</Label>
           <Input {...register("password")} type="password" className="text-black focus-visible:ring-0 focus-visible:ring-offset-0 mt-2 mb-6"/>
-          <Button className="w-full italic bg-light-green" type="submit" disabled={
-            !getValues("username") || !getValues("password")
-          }>Login</Button>
+          <Button className="w-full italic bg-light-green" type="submit" >Login</Button>
         </section>
         </form>
       </div>

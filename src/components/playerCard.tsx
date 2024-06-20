@@ -112,10 +112,10 @@ export default function PlayerCardComponent({
   function getProfileIcon(searchAccount: IPlayer): string | undefined {
     // Find the account with the matching puuid
     const account = accounts.find(acc => acc.mainAccount.puuid === searchAccount.puuid);
-  
+    
     // If account is found, get the first profileIcon using optional chaining and array destructuring
     const profileIcon = account ? Object.values(account.matches).map(match => match.profileIcon)[0] : undefined;
-  
+    console.log(profileIcon)
     return profileIcon;
   }
   
@@ -159,7 +159,7 @@ export default function PlayerCardComponent({
       </div>
       {player?.subAccounts?.length < 2 && (
         <div className="relative gap-2  h-auto flex items-center rounded-lg">
-          {!isCollapse && (
+          {/* {!isCollapse && (
             <div className="relative w-full pb-2">
               <input
                 type="text"
@@ -186,7 +186,7 @@ export default function PlayerCardComponent({
                 </button>
               </span>
             </div>
-          )}
+          )} */}
         </div>
       )}
       {error && (
@@ -210,9 +210,15 @@ export default function PlayerCardComponent({
           )}
           {!isCollapse ? (
             <p
-              className={`text-white h-10 bg-white/20 flex items-center rounded-lg w-full pl-2`}
+              className={`text-white h-12 bg-white/20 flex items-center gap-4 rounded-lg w-full pl-2`}
             >
-              {`${player.mainAccount.gameName}#${player.mainAccount.tagLine}`}
+               <Image
+              alt="test"
+              src={profileIconUrl || ""}
+              width={20}
+              height={20}
+              className="w-fit h-fit rounded-md"
+            />  {`${player.mainAccount.gameName}#${player.mainAccount.tagLine}`}
             </p>
           ) : (
             <p className="flex justify-center w-full">
@@ -244,7 +250,7 @@ export default function PlayerCardComponent({
           <p
             className={`text-red-200 h-10 bg-white/20 flex items-center rounded-lg w-full pl-2 `}
           >
-            {`${account.gameName}#${account.tagLine}`}
+         {`${account.gameName}#${account.tagLine}`}
           </p>
         </div>
       ))}

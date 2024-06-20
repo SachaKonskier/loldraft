@@ -76,6 +76,8 @@ async function handleMatchesByIds(
         .map((element: any) => ({
           championName: element.championName,
           championId: element.championId,
+          summonerPuuid: element.puuid,
+          profileIcon: element.profileIcon,
           death: element.deaths,
           position: element.teamPosition,
           kills: element.kills,
@@ -189,6 +191,7 @@ function mergeData(data: IRefinedChampionOutput[]) {
 
   for (const champion in result) {
     const stats = result[champion];
+    console.log(stats);
     const profileLink = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${stats.profileIcon}.png`;
     stats.csPerMinute = (stats.csPerMinute / stats.totalGames).toFixed(2);
     stats.kda = (stats.kda / stats.totalGames).toFixed(2);
