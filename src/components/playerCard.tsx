@@ -115,7 +115,6 @@ export default function PlayerCardComponent({
     
     // If account is found, get the first profileIcon using optional chaining and array destructuring
     const profileIcon = account ? Object.values(account.matches).map(match => match.profileIcon)[0] : undefined;
-    console.log(profileIcon)
     return profileIcon;
   }
   
@@ -129,7 +128,6 @@ export default function PlayerCardComponent({
   const position = getMostPlayedPosition(player?.matches);
   const positionSvg = positionSvgMap[position?.toUpperCase()] || topSvg;
   const profileIconUrl = getProfileIcon(player.mainAccount)
-
   return (
     <div className=" max-w-[320px] w-auto h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-r from-light-green to-transparent overflow-x-auto">
       <div className="text-white pb-5 justify-center items-center flex gap-4 h-auto w-full">
