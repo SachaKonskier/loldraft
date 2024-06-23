@@ -91,7 +91,7 @@ async function handleMatchesByIds(
           kda: getKda(element.kills, element.deaths, element.assists),
           killParticipation: getKillParticipation(res.info.participants, puuid),
           csPerMinute: parseFloat(
-            (element.totalMinionsKilled / (element.timePlayed / 60)).toFixed(2)
+            ((element.totalMinionsKilled + element.neutralMinionsKilled) / (element.timePlayed / 60)).toFixed(2)
           ),
           gameType: res.info.gameType,
           visionScore: element.visionScore,
