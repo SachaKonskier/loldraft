@@ -12,14 +12,30 @@ export const MongoApi: MongoDbService = {
             throw error;
         }
     },
-    // insertUserToDb: async (user) => {
-    //     return clientPromise.then((client) => {
-    //         const db = client.db("smart_draft");
-    //         const collection = db.collection("users");
-    //         return collection.insertOne(user);
-    //     }
-    //     );
-    // },
+    insertUserToDb: async (user) => {
+        console.log('in method', user)
+        try {
+            const response = await fetch(`api/user`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(user),
+            }).then((response) => response.json());
+            return response;
+            
+        }
+        catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+        // return clientPromise.then((client) => {
+        //     const db = client.db("smart_draft");
+        //     const collection = db.collection("users");
+        //     return collection.insertOne(user);
+        // }
+        // );
+    },
     // getChampionFromDb: async (championId) => {
     //     return clientPromise.then((client) => {
     //         const db = client.db("smart_draft");

@@ -1,6 +1,6 @@
 export type MongoDbService = {
     getUserFromDb(username: string): Promise<unknown>
-    // insertUserToDb(user: any): Promise<unknown>
+    insertUserToDb(user: any): Promise<unknown>
     // getChampionFromDb(championId: string): Promise<unknown>
     // insertChampionToDb(champion: any): Promise<unknown>
     // getMatchFromDb(matchId: string): Promise<unknown>
