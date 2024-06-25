@@ -92,13 +92,13 @@ export default function Home() {
             >
               Login
             </Button>
-            <p className="flex w-full justify-center py-2">Or</p>
+            {/* <p className="flex w-full justify-center py-2">Or</p>
             <Button
               className="w-full italic bg-light-green"
               onClick={() => handleOpenModal()}
             >
               Create an account
-            </Button>
+            </Button> */}
           </section>
         </form>
         {openModal && <CreateUserModal setOpenModal={setOpenModal} />}
