@@ -6,11 +6,12 @@ import { Inter } from "next/font/google";
 // Next
 import { useRouter } from "next/navigation";
 // Forms
-import { SubmitHandler, set, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 // Api Services
 import { MongoApi } from "@/modules/mongodb/mongodb.api";
 import CreateUserModal from "@/components/modal/createUserModal";
 import { useState } from "react";
+
 interface IFormInput {
   username: string;
   password: string;
@@ -25,11 +26,12 @@ export default function Home() {
     register,
     handleSubmit,
     setError,
+    getValues,
     formState: { errors, isDirty, isValid },
   } = useForm<IFormInput>();
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const userFromDb = (await mongoApi.getUserFromDb(
-      "demo_user"
+      getValues().username
     )) as IFormInput;
     if (
       data.username === userFromDb.username &&
@@ -92,13 +94,13 @@ export default function Home() {
             >
               Login
             </Button>
-            {/* <p className="flex w-full justify-center py-2">Or</p>
+            <p className="flex w-full justify-center py-2">Or</p>
             <Button
               className="w-full italic bg-light-green"
               onClick={() => handleOpenModal()}
             >
               Create an account
-            </Button> */}
+            </Button>
           </section>
         </form>
         {openModal && <CreateUserModal setOpenModal={setOpenModal} />}

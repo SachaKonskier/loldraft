@@ -11,14 +11,14 @@ export default async function handler(
     query: { summonerName, summonerTag },
   } = req;
   if (req.method === "GET") {
-    const client = await clientPromise;
-    const db = client.db("smart_draft");
-    const collection = db.collection("summoners");
+   // const client = await clientPromise;
+   // const db = client.db("smart_draft");
+    // const collection = db.collection("summoners");
     let result;
-    const summonerFound = await collection.findOne({
-      summoner: `${summonerName}#${summonerTag}`,
-    });
-    if (!summonerFound) {
+    // const summonerFound = await collection.findOne({
+    //   summoner: `${summonerName}#${summonerTag}`,
+    // });
+   // if (!summonerFound) {
       result = await fetch(
         `${riotUrl}/${summonerName}/${summonerTag}?api_key=${apiKey}`,
         {
@@ -26,16 +26,16 @@ export default async function handler(
           redirect: "follow",
         }
       ).then((response) => response.json());
-      if(result) {
-        await collection.insertOne({
-          summoner: `${summonerName}#${summonerTag}`,
-          updatedDate: new Date(),
-          data: result,
-        });
-      }
-    } else {
-      result = summonerFound.data;
-    }
+      // if(result) {
+      //   await collection.insertOne({
+      //     summoner: `${summonerName}#${summonerTag}`,
+      //     updatedDate: new Date(),
+      //     data: result,
+      //   });
+      // }
+    // } else {
+    //   result = summonerFound.data;
+    // }
     res.send(result);
   } else {
     res.status(405).send({ message: "Method Not Allowed" });
