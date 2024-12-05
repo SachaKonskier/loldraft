@@ -2,6 +2,7 @@
 import { RiotApi } from "@/modules/riot/riot.api";
 import { ISearchAccounts } from "@/stores/players-store";
 const riotApi = RiotApi;
+
 export const mostPlayedPosition = (positions: any) => {
     if (positions == undefined) return { position: null, count: 0 };
     if (!positions.length) return { position: null, count: 0 };

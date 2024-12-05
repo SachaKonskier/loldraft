@@ -6,7 +6,7 @@ export default function ChampionCard({
 }: {
   champion: IRefinedChampionDisplayedData;
 }) {
-
+  console.log(champion)
   function getKdaThreshold(kda: string) {
     switch (true) {
       case parseFloat(kda) <= 1.5:

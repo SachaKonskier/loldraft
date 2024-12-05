@@ -3,7 +3,7 @@ import { IRefinedChampionOutput } from "@/types/matches/matches";
 import { NextApiRequest, NextApiResponse } from "next";
 const riotUrl = "https://europe.api.riotgames.com/lol/match/v5/matches";
 const apiKey = process.env.RIOT_API_KEY;
-const DDRAGON_VERSION = "14.11.1"
+const DDRAGON_VERSION = "14.11.1";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -30,7 +30,7 @@ export default async function handler(
 async function handleMatchesByPuuid(puuid: string, res: NextApiResponse) {
   try {
     const result: string[] = await fetch(
-      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count=6&api_key=${apiKey}`,
+      `${riotUrl}/by-puuid/${puuid}/ids?type=ranked&start=0&count5&api_key=${apiKey}`,
       {
         method: "GET",
         redirect: "follow",
@@ -54,23 +54,14 @@ async function handleMatchesByIds(
   const stringToMatchesArray = matches.split(",");
 
   try {
-    const client = await clientPromise
-    const db = client.db("smart_draft")
-    const collection = db.collection("matchs")
     const results: IRefinedChampionOutput[] = [];
     for (let match of stringToMatchesArray) {
-      let res: any
-      const matchFound = await collection.findOne({id: match})
-      if(!matchFound){
-        res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
+      let res: any;
+
+      res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
         (response) => response.json()
-        )
-        if(res) {
-          await collection.insertOne({id : match, data: res })
-        }
-      } else {
-        res = matchFound.data
-      }
+      );
+
       const filteredDataByPuuid = res.info.participants
         .filter((participant: any) => participant.puuid === puuid)
         .map((element: any) => ({
@@ -78,6 +69,7 @@ async function handleMatchesByIds(
           championId: element.championId,
           summonerPuuid: element.puuid,
           profileIcon: element.profileIcon,
+          gameEndedInEarlySurrender: element.gameEndedInEarlySurrender,
           death: element.deaths,
           position: element.teamPosition,
           kills: element.kills,
@@ -91,16 +83,71 @@ async function handleMatchesByIds(
           kda: getKda(element.kills, element.deaths, element.assists),
           killParticipation: getKillParticipation(res.info.participants, puuid),
           csPerMinute: parseFloat(
-            (element.totalMinionsKilled / (element.timePlayed / 60)).toFixed(2)
+            (
+              (element.totalMinionsKilled + element.neutralMinionsKilled) /
+              (element.timePlayed / 60)
+            ).toFixed(2)
           ),
           gameType: res.info.gameType,
           visionScore: element.visionScore,
         }))
         ?.filter(
           (element: any) =>
-            element.partyType !== "ARAM" && element.partyType !== "URF"
+            element.partyType !== "ARAM" &&
+            element.partyType !== "URF" &&
+            !element.gameEndedInEarlySurrender
         );
+      console.log(filteredDataByPuuid);
       results.push(...filteredDataByPuuid);
+      // const client = await clientPromise
+      // const db = client.db("smart_draft")
+      // const collection = db.collection("matchs")
+      // const results: IRefinedChampionOutput[] = [];
+      // for (let match of stringToMatchesArray) {
+      //   let res: any
+      //   const matchFound = await collection.findOne({id: match})
+      //   if(!matchFound){
+      //     res = await fetch(`${riotUrl}/${match}?api_key=${apiKey}`).then(
+      //     (response) => response.json()
+      //     )
+      //     if(res) {
+      //       await collection.insertOne({id : match, data: res })
+      //     }
+      //   } else {
+      //     res = matchFound.data
+      //   }
+      //   const filteredDataByPuuid = res.info.participants
+      //     .filter((participant: any) => participant.puuid === puuid)
+      //     .map((element: any) => ({
+      //       championName: element.championName,
+      //       championId: element.championId,
+      //       summonerPuuid: element.puuid,
+      //       profileIcon: element.profileIcon,
+      //       gameEndedInEarlySurrender: element.gameEndedInEarlySurrender,
+      //       death: element.deaths,
+      //       position: element.teamPosition,
+      //       kills: element.kills,
+      //       summonerName: element.riotIdGameName,
+      //       assists: element.assists,
+      //       minionsKilled:
+      //         element.totalMinionsKilled + element.neutralMinionsKilled,
+      //       win: element.win,
+      //       timePlayed: element.timePlayed,
+      //       partyType: res.info.gameMode,
+      //       kda: getKda(element.kills, element.deaths, element.assists),
+      //       killParticipation: getKillParticipation(res.info.participants, puuid),
+      //       csPerMinute: parseFloat(
+      //         ((element.totalMinionsKilled + element.neutralMinionsKilled) / (element.timePlayed / 60)).toFixed(2)
+      //       ),
+      //       gameType: res.info.gameType,
+      //       visionScore: element.visionScore,
+      //     }))
+      //     ?.filter(
+      //       (element: any) =>
+      //         element.partyType !== "ARAM" && element.partyType !== "URF" && !element.gameEndedInEarlySurrender
+      //     );
+      //     console.log(filteredDataByPuuid)
+      //   results.push(...filteredDataByPuuid);
     }
     // Sort the array based on winrate (totalGame / totalFetchedGame * 100)
     const championsArray = Object.entries(mergeData(results));
@@ -150,6 +197,7 @@ function mergeData(data: IRefinedChampionOutput[]) {
     if (champion) {
       champion.summonerPuuid = curr.summonerPuuid;
       champion.profileIcon = curr.profileIcon;
+      champion.gameEndedInEarlySurrender = curr.gameEndedInEarlySurrender;
       champion.name = curr.championName;
       champion.id = curr.championId;
       champion.kills += curr.kills;
@@ -169,6 +217,7 @@ function mergeData(data: IRefinedChampionOutput[]) {
       acc[curr.championName] = {
         summonerPuuid: curr.summonerPuuid,
         profileIcon: curr.profileIcon,
+        gameEndedInEarlySurrender: curr.gameEndedInEarlySurrender,
         name: curr.championName,
         id: curr.championId,
         kills: curr.kills,
@@ -191,7 +240,6 @@ function mergeData(data: IRefinedChampionOutput[]) {
 
   for (const champion in result) {
     const stats = result[champion];
-
     const profileLink = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${stats.profileIcon}.png`;
     stats.csPerMinute = (stats.csPerMinute / stats.totalGames).toFixed(2);
     stats.kda = (stats.kda / stats.totalGames).toFixed(2);
