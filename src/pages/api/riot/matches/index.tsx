@@ -3,7 +3,7 @@ import { IRefinedChampionOutput } from "@/types/matches/matches";
 import { NextApiRequest, NextApiResponse } from "next";
 const riotUrl = "https://europe.api.riotgames.com/lol/match/v5/matches";
 const apiKey = process.env.RIOT_API_KEY;
-const DDRAGON_VERSION = "14.11.1";
+const DDRAGON_VERSION = "15.13.1";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
