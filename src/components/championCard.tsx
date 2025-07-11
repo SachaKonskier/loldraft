@@ -1,12 +1,10 @@
 import Image from "next/image";
 import { IRefinedChampionDisplayedData } from "@/types/matches/matches";
-import CircleProgressBar from "./circleProgressBar";
-export default function ChampionCard({
-  champion,
-}: {
+interface IProps {
   champion: IRefinedChampionDisplayedData;
-}) {
-  console.log(champion)
+  position?: string;
+}
+export default function ChampionCard({ champion, position }: IProps) {
   function getKdaThreshold(kda: string) {
     switch (true) {
       case parseFloat(kda) <= 1.5:
@@ -21,12 +19,14 @@ export default function ChampionCard({
         return "";
     }
   }
+
+  console.log("champion", champion);
   const getKda = (kills: number, deaths: number, assists: number) => {
     if (deaths === 0) {
       return ((kills + assists) / 1).toFixed(2);
     }
     return ((kills + assists) / deaths).toFixed(2);
-  }
+  };
   function getKPThreshold(kp: string) {
     switch (true) {
       case parseFloat(kp) < 40:
@@ -42,7 +42,6 @@ export default function ChampionCard({
     }
   }
   function csPerMinuteThreshold(csPerMinute: string) {
-
     switch (true) {
       case parseFloat(csPerMinute) < 3:
         return "text-veryLow";
@@ -58,7 +57,7 @@ export default function ChampionCard({
   }
   function winRateThreshold(winRate: string) {
     switch (true) {
-      case parseFloat(winRate)>=0 && parseFloat(winRate) <= 40:
+      case parseFloat(winRate) >= 0 && parseFloat(winRate) <= 40:
         return "text-veryLow";
       case parseFloat(winRate) >= 41 && parseFloat(winRate) <= 50:
         return "text-medium";
@@ -80,37 +79,23 @@ export default function ChampionCard({
       : ((champion.kills + champion.assists) / champion.deaths).toFixed(2);
 
   return (
-    <div
-      className="shadow-md px-4 py-3 relative opacity-90 hover:opacity-100"
-    >
-      <div className={`absolute inset-0 rounded-md overflow-hidden `}>
-        <Image
-          src={champion.championBgImg}
-          alt={champion.name}
-          layout="fill"
-          className="rounded-md object-cover object-center"
-        />
-      </div>
-
+    <div className="shadow-md px-4 py-3 relative opacity-90 hover:opacity-100 border rounded-md bg-gradient-to-r from-zinc-700">
       <div className=" flex items-center gap-2 relative z-10 font-outfit text-white font-medium w-full">
         <Image
           src={champion.championImg}
           alt={champion.name}
-          width={30}
-          height={30}
-         
+          width={60}
+          height={60}
           className="rounded-full border-2 border-light-green "
         />
-        <h1 className="uppercase font-black text-lg flex-1 line-clamp-1">
+        <h1 className="uppercase font-black text-md flex-1 line-clamp-1">
           {champion.name}
         </h1>
         <span className="font-light">W/R</span>
-        <CircleProgressBar
-          percentage={parseFloat(champion.winrate).toFixed(0)}
-          color={winRateThreshold(champion.winrate)}
-          size={42}
-          isDiplayed={true}
-        />
+
+        <span className={`font-black ${winRateThreshold(champion.winrate)}`}>
+          {parseFloat(champion.winrate).toFixed(0)}%
+        </span>
       </div>
       <div className="relative z-10 font-outfit text-white flex items-baseline ">
         <span className="uppercase font-bold text-2xl italic">
@@ -138,8 +123,12 @@ export default function ChampionCard({
               1
             )}
           </span>
-          <span className={`font-black ${getKdaThreshold(getKda(champion.kills, champion.deaths, champion.assists))}`}>
-            {kda}
+          <span
+            className={`font-black ${getKdaThreshold(
+              getKda(champion.kills, champion.deaths, champion.assists)
+            )}`}
+          >
+            ( {`${kda}`})
           </span>
         </div>
         <div className="flex uppercase gap-1 items-center">
@@ -150,19 +139,28 @@ export default function ChampionCard({
                 champion.killParticipation
               )}`}
             >
-              {parseFloat(champion.killParticipation).toFixed(0)}
+              {parseFloat(champion.killParticipation).toFixed(0)}%
             </span>
-            %
           </div>
-          <circle className=" w-2 h-2 bg-red-500 rounded-full"></circle>
-          <span
-            className={`font-black ${csPerMinuteThreshold(
-              champion.csPerMinute
-            )}`}
-          >
-            {champion.csPerMinute}
-          </span>{" "}
-          <span className="italic">cs/min</span>
+
+          {!champion.positions.includes("UTILITY") ? (
+            <>
+              <circle className=" w-2 h-2 bg-red-500 rounded-full"></circle>
+              <span
+                className={`font-black ${csPerMinuteThreshold(
+                  champion.csPerMinute
+                )}`}
+              >
+                {champion.csPerMinute}
+              </span>
+              <span className="italic">cs/min</span>
+            </>
+          ) : (
+            <>
+              <span className="italic">Vision</span>{" "}
+              <span className="font-black">{champion.visionScore}</span>
+            </>
+          )}
         </div>
       </div>
     </div>

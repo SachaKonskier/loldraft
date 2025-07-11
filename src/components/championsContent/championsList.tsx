@@ -15,7 +15,6 @@ import { usePlayersStore } from "@/providers/players-store-provider";
 
 interface IProps {
   data: any;
-
   position: string;
   player: any;
 }
@@ -61,7 +60,7 @@ export default function ChampionsList({
               } overflow-hidden` }
               key={data[champion].id}
             >
-              <ChampionCard champion={data[champion]} />
+              <ChampionCard champion={data[champion]} position={position}/>
             </div>
           ))}
       </div>
