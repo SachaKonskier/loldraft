@@ -56,23 +56,20 @@ export default function PlayerCardComponent({
     }
 
     if (accountType === "sub") {
-  
       const matches = (await riotApi.getRawMatchList(
         player?.subAccounts[0]?.puuid
       )) as any;
-   
+
       const filteredMatches = (await riotApi.getFilteredMatchList(
         player?.subAccounts[0]?.puuid,
         matches
       )) as IMatch[];
       setIsFetch(true);
-   
+
       updateMatches(player?.mainAccount?.puuid, filteredMatches);
-     
     }
   }
   if (player?.mainAccount?.puuid && player?.matches?.length === 0) {
-  
     getMatchesData("main");
   }
 
@@ -111,13 +108,17 @@ export default function PlayerCardComponent({
 
   function getProfileIcon(searchAccount: IPlayer): string | undefined {
     // Find the account with the matching puuid
-    const account = accounts.find(acc => acc.mainAccount.puuid === searchAccount.puuid);
-    
+    const account = accounts.find(
+      (acc) => acc.mainAccount.puuid === searchAccount.puuid
+    );
+
     // If account is found, get the first profileIcon using optional chaining and array destructuring
-    const profileIcon = account ? Object.values(account.matches).map(match => match.profileIcon)[0] : undefined;
+    const profileIcon = account
+      ? Object.values(account.matches).map((match) => match.profileIcon)[0]
+      : undefined;
     return profileIcon;
   }
-  
+
   const positionSvgMap: Record<string, string> = {
     TOP: topSvg,
     JUNGLE: jungleSvg,
@@ -127,7 +128,8 @@ export default function PlayerCardComponent({
   };
   const position = getMostPlayedPosition(player?.matches);
   const positionSvg = positionSvgMap[position?.toUpperCase()] || topSvg;
-  const profileIconUrl = getProfileIcon(player.mainAccount)
+  const profileIconUrl = getProfileIcon(player.mainAccount);
+  console.log("position", position);
   return (
     <div className=" max-w-[320px] w-auto h-auto font-outfit rounded-lg ring-light-green ring-1 p-3 bg-gradient-to-r from-light-green to-transparent overflow-x-auto">
       <div className="text-white pb-5 justify-center items-center flex gap-4 h-auto w-full">
@@ -210,23 +212,24 @@ export default function PlayerCardComponent({
             <p
               className={`text-white h-12 bg-white/20 flex items-center gap-4 rounded-lg w-full pl-2`}
             >
-               <Image
-              alt="test"
-              src={profileIconUrl || ""}
-              width={20}
-              height={20}
-              className="w-fit h-fit rounded-md"
-            />  {`${player.mainAccount.gameName}#${player.mainAccount.tagLine}`}
+              <Image
+                alt="test"
+                src={profileIconUrl || ""}
+                width={20}
+                height={20}
+                className="w-fit h-fit rounded-md"
+              />{" "}
+              {`${player.mainAccount.gameName}#${player.mainAccount.tagLine}`}
             </p>
           ) : (
             <p className="flex justify-center w-full">
-            <Image
-              alt="test"
-              src={profileIconUrl || ""}
-              width={40}
-              height={40}
-              className="w-fit h-fit"
-            />
+              <Image
+                alt="test"
+                src={profileIconUrl || ""}
+                width={40}
+                height={40}
+                className="w-fit h-fit"
+              />
             </p>
           )}
         </div>
@@ -248,7 +251,7 @@ export default function PlayerCardComponent({
           <p
             className={`text-red-200 h-10 bg-white/20 flex items-center rounded-lg w-full pl-2 `}
           >
-         {`${account.gameName}#${account.tagLine}`}
+            {`${account.gameName}#${account.tagLine}`}
           </p>
         </div>
       ))}
